@@ -1,6 +1,6 @@
 package com.cricketgame;
 
-public class Team {
+public class Team{
     String name;
     int score;
     int wickets;
@@ -14,7 +14,7 @@ public class Team {
         this.wickets = 0;
     }
 
-    void play(int overs, Team oppositeTeam) {
+    void play(int overs, Team oppositeTeam){
 
         currentBatsman = players[0];
         nonStriker = players[1];
@@ -60,10 +60,23 @@ public class Team {
                 }
 
                 score += scored;
+                try {
+                    Thread.sleep(1000);
 //                System.out.println(score);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                showScoreBoard(this);
             }
         }
+
     }
+
+    void showScoreBoard(Team team){
+        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets+"|");
+    }
+
 
     void getStats() {
         System.out.println("\nStats for " + name);
