@@ -1,13 +1,15 @@
 package com.cricketgame;
 
 public class MatchService {
-    void play(int overs, Team battingTeam , Team bowlingTeam){
 
-        Player nonStriker;
-        Player currentBatsman;
+    Player nonStriker;
+    Player currentBatsman;
+    int playerFactor = 9;
+
+    void play(int overs, Team battingTeam, Team bowlingTeam) {
+
         currentBatsman = battingTeam.players[0];
         nonStriker = battingTeam.players[1];
-        int playerFactor = 9;
 
         System.out.println("\n ==> " + battingTeam.name + " is Batting");
 
@@ -20,7 +22,7 @@ public class MatchService {
 
                 int scored = (int) (Math.random() * 1000) % playerFactor;
 
-                if (scored == 5) continue;
+                if (scored == 5) continue; // counted as 0 runs
 
                 if (scored >= 7) {
                     battingTeam.wickets += 1;
@@ -53,8 +55,7 @@ public class MatchService {
                 try {
                     Thread.sleep(1000);
 //                System.out.println(score);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 showScoreBoard(battingTeam);
@@ -63,8 +64,18 @@ public class MatchService {
 
     }
 
-    void showScoreBoard(Team team){
-        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets+"|");
+    void getStats(Team team) {
+        System.out.println("\nStats for " + team.name);
+        System.out.println("Name \t Wickets \t Runs");
+        for (Player p : team.players) {
+
+            System.out.println(p.name + "  \t" + p.wicket + "\t\t  " + p.score);
+
+        }
+    }
+
+    void showScoreBoard(Team team) {
+        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets + "|");
     }
 
     int updatePlayerFactor(Player batsman, Player bowler) {
