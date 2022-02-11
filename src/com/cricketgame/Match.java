@@ -4,25 +4,26 @@ public class Match {
 
     Team team1;
     Team team2;
+    MatchService matchService;
     int overs;
 
     Match(getMatchDetails MatchDetails) {
         this.team1 = MatchDetails.team1;
         this.team2 = MatchDetails.team2;
         this.overs = MatchDetails.overs;
+        matchService = new MatchService();
     }
 
     void startMatch() {
         team1.getPlayers();
         team2.getPlayers();
-        MatchService matchService = new MatchService();
         matchService.play(overs, team1, team2);
         matchService.play(overs, team2, team1);
     }
 
     void getResults() {
-        team1.getStats();
-        team2.getStats();
+        matchService.getStats(team1);
+        matchService.getStats(team2);
         System.out.println("\nScore of " + team1.name + " is " + team1.score + " with wickets = " + team1.wickets);
         System.out.println("Score of " + team2.name + " is " + team2.score + " with wickets = " + team2.wickets);
         if (team1.score == team2.score) {
