@@ -41,17 +41,17 @@ public class Match {
         Team team2;
         int overs = 20;
 
-        getMatchDetails SetTeam1(Team team1) {
+        getMatchDetails setTeam1(Team team1) {
             this.team1 = team1;
             return this;
         }
 
-        getMatchDetails SetTeam2(Team team2) {
+        getMatchDetails setTeam2(Team team2) {
             this.team2 = team2;
             return this;
         }
 
-        getMatchDetails SetOvers(int overs) {
+        getMatchDetails setOvers(int overs) {
             this.overs = overs;
             return this;
         }

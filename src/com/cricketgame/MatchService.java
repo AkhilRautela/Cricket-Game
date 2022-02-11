@@ -6,7 +6,7 @@ public class MatchService {
     Player currentBatsman;
     int playerFactor = 9;
 
-    void play(int overs, Team battingTeam , Team bowlingTeam){
+    void play(int overs, Team battingTeam, Team bowlingTeam) {
 
         currentBatsman = battingTeam.players[0];
         nonStriker = battingTeam.players[1];
@@ -22,7 +22,7 @@ public class MatchService {
 
                 int scored = (int) (Math.random() * 1000) % playerFactor;
 
-                if (scored == 5) continue;
+                if (scored == 5) continue; // counted as 0 runs
 
                 if (scored >= 7) {
                     battingTeam.wickets += 1;
@@ -55,8 +55,7 @@ public class MatchService {
                 try {
                     Thread.sleep(1000);
 //                System.out.println(score);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 showScoreBoard(battingTeam);
@@ -75,8 +74,8 @@ public class MatchService {
         }
     }
 
-    void showScoreBoard(Team team){
-        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets+"|");
+    void showScoreBoard(Team team) {
+        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets + "|");
     }
 
     int updatePlayerFactor(Player batsman, Player bowler) {

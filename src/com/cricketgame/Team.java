@@ -1,25 +1,24 @@
 package com.cricketgame;
 
-enum Teams{
+enum Teams {
     INDIA,
     AUSTRALIA,
     PAKISTAN,
-    ENGLAND;
+    ENGLAND
 }
 
-public class Team{
+public class Team {
     String name;
     int score;
     int wickets;
     Player[] players;
 
     Team(String name) {
-        try{
+        try {
             this.name = Teams.valueOf(name).toString();
             this.score = 0;
             this.wickets = 0;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(name + " Team does not exist. ");
             System.exit(0);
         }
