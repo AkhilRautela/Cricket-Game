@@ -13,21 +13,26 @@ public class Match {
     }
 
     void startMatch() {
-        team1.play(overs);
-        team2.play(overs);
+        team1.getPlayers();
+        team2.getPlayers();
+        team1.play(overs, team2);
+        team2.play(overs, team1);
     }
 
     void getResults() {
-        System.out.println("Score of " + team1.name + " is " + team1.score + " with wickets = " + team1.wickets);
+        team1.getStats();
+        team2.getStats();
+        System.out.println("\nScore of " + team1.name + " is " + team1.score + " with wickets = " + team1.wickets);
         System.out.println("Score of " + team2.name + " is " + team2.score + " with wickets = " + team2.wickets);
         if (team1.score == team2.score) {
             System.out.println("Draw between the teams");
         } else if (team1.score > team2.score) {
-            System.out.println(team1.name + " wins the game");
+            System.out.println("\n" + team1.name + " wins the game");
         } else {
-            System.out.println(team2.name + " wins the game");
+            System.out.println("\n" + team2.name + " wins the game");
         }
     }
+
 
     public static class getMatchDetails {
         Team team1;
