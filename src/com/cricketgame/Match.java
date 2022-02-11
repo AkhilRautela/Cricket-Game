@@ -15,8 +15,9 @@ public class Match {
     void startMatch() {
         team1.getPlayers();
         team2.getPlayers();
-        team1.play(overs, team2);
-        team2.play(overs, team1);
+        MatchService matchService = new MatchService();
+        matchService.play(overs, team1, team2);
+        matchService.play(overs, team2, team1);
     }
 
     void getResults() {
