@@ -12,6 +12,7 @@ public class Team {
     int score;
     int wickets;
     Player[] players;
+    Player nonStriker,batsman;
 
     Team(String name) {
         try {
