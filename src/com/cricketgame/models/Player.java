@@ -1,12 +1,13 @@
-package com.cricketgame;
+package com.cricketgame.models;
 
 public class Player {
-    String name;
-    int bowlingRating;
-    int battingRating;
+    public String name;
+    public int bowlingRating;
+    public int battingRating;
     int fieldingRating;
-    int score;
-    int wicket;
+    public int score;
+    public int wicket;
+    public boolean isOut;
 
     Player(String name, int bowlingRating, int battingRating, int fieldingRating) {
         this.name = name;
@@ -15,6 +16,7 @@ public class Player {
         this.fieldingRating = fieldingRating;
         this.score = 0;
         this.wicket = 0;
+        this.isOut = false;
     }
 
     void getRating() {
