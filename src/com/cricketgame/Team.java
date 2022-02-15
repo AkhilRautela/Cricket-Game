@@ -31,6 +31,9 @@ public class Team {
 
         for (int i = 0; i < 11; i++) {
             players[i] = new Player("player " + (i + 1), 10, 10, 10);
+            players[i].battingRating = (int) (Math.random()) * 10;
+            players[i].fieldingRating = (int) (Math.random()) * 10;
+            players[i].battingRating = (int) (Math.random()) * 10;
         }
 
     }
