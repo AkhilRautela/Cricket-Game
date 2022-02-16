@@ -4,5 +4,6 @@ public enum Teams {
         INDIA,
         AUSTRALIA,
         PAKISTAN,
-        ENGLAND
+        ENGLAND,
+        BANGLADESH
 }

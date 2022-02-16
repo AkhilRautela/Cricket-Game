@@ -1,96 +1,121 @@
 package com.cricketgame.service;
 
+import com.cricketgame.Constants;
+import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
+import com.cricketgame.models.PlayerType;
 import com.cricketgame.models.Team;
+import com.cricketgame.utils.InningUtils;
 import com.cricketgame.utils.MatchUtils;
 
 public class InningService {
 
-    int playerFactor = 9;
+    int strikerIndex;
+    int nonStrikerIndex;
+    Inning inning;
+    boolean firstInningDone;
 
-    public void startInning(int overs, Team battingTeam, Team bowlingTeam) {
+    InningService(int overs, Team battingTeam, Team bowlingTeam, boolean firstInningDone) {
+        this.inning = new Inning(battingTeam, bowlingTeam, overs);
+        strikerIndex = 0;
+        nonStrikerIndex = 1;
+        this.firstInningDone = firstInningDone;
+    }
 
-        battingTeam.batsman = battingTeam.players.get(0);
-        battingTeam.nonStriker = battingTeam.players.get(1);
+    public void startInning() {
 
-        System.out.println("\n ==> " + battingTeam.name + " is Batting");
+        System.out.println("\n ==> " + inning.battingTeam.name + " is Batting");
 
-        for (int i = 1; i <= overs; i++) {
-
-            Player currentBowler = bowlingTeam.players.get(MatchUtils.getRandomNumber(0,10));
-            System.out.println("\n" + currentBowler.name + " is Bowling and the over is = " + i + "\n");
-
-            for (int j = 0; j <= 6; j++) {
-
-                int scoreInTheBall = MatchUtils.getRandomNumber(0,playerFactor);
-
-                if (scoreInTheBall == 5) continue; // counted as 0 runs
-
-                if (scoreInTheBall >= 7) {
-                    battingTeam.wickets += 1;
-                    System.out.println((battingTeam.batsman.name) + " is out with score of " + (battingTeam.batsman.score));
-                    //                System.out.print("\r");
-                    if (battingTeam.wickets == 10) {
-                        battingTeam.batsman = battingTeam.nonStriker;
-                        return;
-                    }
-
-                    battingTeam.batsman.isOut = true;
-
-                    for (int k = 0; k < 11; k++)
-                        if (battingTeam.players.get(k).isOut == false && battingTeam.nonStriker != battingTeam.players.get(k)) {
-                            battingTeam.batsman = battingTeam.players.get(k);
-                            break;
-                        }
-                    currentBowler.wicket += 1;
-                    continue;
-                }
-
-                battingTeam.batsman.score += scoreInTheBall;
-
-                if (scoreInTheBall == 1 || scoreInTheBall == 3) {
-                    Player temp = battingTeam.batsman;
-                    battingTeam.batsman = battingTeam.nonStriker;
-                    battingTeam.nonStriker = temp;
-                    playerFactor = updatePlayerFactor(battingTeam.batsman, currentBowler);
-                }
-
-                if (scoreInTheBall == 6 || scoreInTheBall == 4) {
-                    System.out.println(battingTeam.batsman.name + " scored " + scoreInTheBall);
-//                System.out.print("\r");
-                }
-
-                battingTeam.score += scoreInTheBall;
-
-                if (bowlingTeam.havePlayed && battingTeam.score > bowlingTeam.score) {
-                    return;
-                }
-
-                try {
-                    Thread.sleep(1000);
-//                System.out.println(score);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                showScoreBoard(battingTeam);
-            }
+        for (int i = 1; i <= inning.overs; i++) {
+            int currentBowlerIndex = MatchUtils.getRandomNumber(0, 10);
+            System.out.println("\n" + inning.bowlingTeam.players.get(currentBowlerIndex).name + " is Bowling and the over is = " + i + "\n");
+            startOver(currentBowlerIndex);
         }
-        battingTeam.havePlayed = true;
 
     }
 
-    void showScoreBoard(Team team) {
-        System.out.println("|" + team.name + " " + team.score + "/" + team.wickets + "|");
+    public void startOver(int currentBowlerIndex) {
+        for (int j = 1; j <= Constants.TOTAL_BALLS_IN_ONE_OVER; j++) {
+
+            int scoreInTheBall = MatchUtils.getRandomNumber(0, Constants.PLAYER_FACTOR);
+
+            if (scoreInTheBall == 5 || scoreInTheBall == 0) continue; // counted as 0 runs
+
+            if (scoreInTheBall > Constants.MAX_RUNS_IN_ONE_BALL) {
+                inning.wicketsTaken.set(currentBowlerIndex, inning.wicketsTaken.get(currentBowlerIndex) + 1);
+                handleWicket();
+                continue;
+            }
+
+            inning.scoreOfPlayers.set(strikerIndex, inning.scoreOfPlayers.get(strikerIndex) + scoreInTheBall);
+            handleRuns(scoreInTheBall);
+            inning.score += scoreInTheBall;
+
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            showScoreBoard();
+        }
     }
 
-    int updatePlayerFactor(Player batsman, Player bowler) {
+    // handle wickets when the striker got out by currentBowler
+    public void handleWicket() {
+
+        inning.wickets += 1;
+        System.out.println((inning.battingTeam.players.get(strikerIndex).name) + " is out with score of " + (inning.scoreOfPlayers.get(strikerIndex)));
+
+        if (inning.wickets == Constants.TOTAL_WICKETS) {
+            strikerIndex = nonStrikerIndex;
+            return;
+        }
+        strikerIndex = InningUtils.getNextBatsman(strikerIndex, nonStrikerIndex, inning.isOut);
+    }
+
+    // handle runs in striker hits the ball
+    public void handleRuns(int scoreInTheBall) {
+
+        if (scoreInTheBall % 2 == 1) {
+            swapPlayer(strikerIndex, nonStrikerIndex);
+        }
+
+        if (scoreInTheBall % 2 == 0) {
+            System.out.println((inning.battingTeam.players.get(strikerIndex).name) + " hits an " + scoreInTheBall);
+        }
+    }
+
+    // swap striker and non-striker for odd runs
+    public void swapPlayer(int strikerIndex, int nonStrikerIndex) {
+        int temp = strikerIndex;
+        strikerIndex = nonStrikerIndex;
+        nonStrikerIndex = temp;
+    }
+
+    void showScoreBoard() {
+        System.out.println("|" + inning.battingTeam.name + " " + inning.score + "/" + inning.wickets + "|");
+    }
+
+
+    int updatePlayerFactor(int strikerIndex, int currentBowlerIndex) {
         // will update on the basis of skills of batsman and bowler
-        if (bowler.bowlingRating >= 8 && batsman.battingRating >= 8) {
-            return 9;
-        } else if (bowler.bowlingRating >= 8) {
-            return 10;
-        } else if (batsman.battingRating >= 8) {
-            return 8;
+        Player striker = inning.battingTeam.players.get(strikerIndex);
+        Player bowler = inning.bowlingTeam.players.get(currentBowlerIndex);
+        if (striker.playertype == PlayerType.BATSMAN && bowler.playertype == PlayerType.BALLER) {
+            if (striker.rating >= 8 && bowler.rating >= 8) {
+                return 8;
+            }
+            if (striker.rating >= 8) return 8;
+            else return 9;
+        }
+        if (bowler.playertype == PlayerType.BALLER) {
+            if (bowler.rating >= 8) {
+                return 10;
+            }
+        } else {
+            if (striker.rating >= 8) {
+                return 8;
+            }
         }
         return 9;
     }

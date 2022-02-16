@@ -2,21 +2,12 @@ package com.cricketgame.models;
 
 public class Player {
     public String name;
-    public int bowlingRating;
-    public int battingRating;
-    int fieldingRating;
-    public int score;
-    public int wicket;
-    public boolean isOut;
+    public int rating;
+    public PlayerType playertype;
 
-    Player(String name, int bowlingRating, int battingRating, int fieldingRating) {
+    Player(String name, int rating) {
         this.name = name;
-        this.battingRating = battingRating;
-        this.bowlingRating = bowlingRating;
-        this.fieldingRating = fieldingRating;
-        this.score = 0;
-        this.wicket = 0;
-        this.isOut = false;
+        this.rating = rating;
     }
 
     void getRating() {

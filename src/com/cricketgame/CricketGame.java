@@ -30,7 +30,7 @@ class CricketGame {
         }
 
 
-        // Teams available are INDIA PAKISTAN AUSTRALIA AND ENGLAND
+        // Teams available in enums are INDIA PAKISTAN AUSTRALIA AND ENGLAND
         System.out.println("Enter Team1 Name");
         team1Name = scan.next().toUpperCase();
         Team team1 = new Team(team1Name);

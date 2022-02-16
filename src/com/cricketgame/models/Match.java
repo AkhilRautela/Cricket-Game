@@ -14,8 +14,6 @@ public class Match {
         this.overs = MatchDetails.overs;
     }
 
-
-
     public static class getMatchDetails {
         Team team1;
         Team team2;
