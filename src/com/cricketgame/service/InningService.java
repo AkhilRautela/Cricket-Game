@@ -14,12 +14,14 @@ public class InningService {
     int nonStrikerIndex;
     Inning inning;
     boolean firstInningDone;
+    int oppositeTeamScore;
 
-    InningService(int overs, Team battingTeam, Team bowlingTeam, boolean firstInningDone) {
+    InningService(int overs, Team battingTeam, Team bowlingTeam, boolean firstInningDone, int oppositeTeamScore) {
         this.inning = new Inning(battingTeam, bowlingTeam, overs);
         strikerIndex = 0;
         nonStrikerIndex = 1;
         this.firstInningDone = firstInningDone;
+        this.oppositeTeamScore = oppositeTeamScore;
     }
 
     public void startInning() {
@@ -28,6 +30,7 @@ public class InningService {
 
         for (int i = 1; i <= inning.overs; i++) {
             int currentBowlerIndex = MatchUtils.getRandomNumber(0, 10);
+            if(checkScoreMoreThenOppositeTeam() == true) return ;
             System.out.println("\n" + inning.bowlingTeam.players.get(currentBowlerIndex).name + " is Bowling and the over is = " + i + "\n");
             startOver(currentBowlerIndex);
         }
@@ -35,7 +38,10 @@ public class InningService {
     }
 
     public void startOver(int currentBowlerIndex) {
+
         for (int j = 1; j <= Constants.TOTAL_BALLS_IN_ONE_OVER; j++) {
+
+            if(checkScoreMoreThenOppositeTeam() == true) return ;
 
             int scoreInTheBall = MatchUtils.getRandomNumber(0, Constants.PLAYER_FACTOR);
 
@@ -44,6 +50,7 @@ public class InningService {
             if (scoreInTheBall > Constants.MAX_RUNS_IN_ONE_BALL) {
                 inning.wicketsTaken.set(currentBowlerIndex, inning.wicketsTaken.get(currentBowlerIndex) + 1);
                 handleWicket();
+                showScoreBoard();
                 continue;
             }
 
@@ -60,10 +67,20 @@ public class InningService {
         }
     }
 
+    boolean checkScoreMoreThenOppositeTeam(){
+        if(firstInningDone == true && oppositeTeamScore < inning.score){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     // handle wickets when the striker got out by currentBowler
     public void handleWicket() {
 
         inning.wickets += 1;
+        inning.isOut.set(strikerIndex,true);
         System.out.println((inning.battingTeam.players.get(strikerIndex).name) + " is out with score of " + (inning.scoreOfPlayers.get(strikerIndex)));
 
         if (inning.wickets == Constants.TOTAL_WICKETS) {
