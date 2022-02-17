@@ -1,9 +1,12 @@
 package com.cricketgame;
 
+import com.cricketgame.models.Match;
+import com.cricketgame.models.Team;
+import com.cricketgame.service.MatchService;
+
 import java.util.Scanner;
 
-
-public class CricketGame {
+class CricketGame {
     public static void main(String[] args) {
 
         int overs;
@@ -27,7 +30,7 @@ public class CricketGame {
         }
 
 
-        // Teams available are INDIA PAKISTAN AUSTRALIA AND ENGLAND
+        // Teams available in enums are INDIA PAKISTAN AUSTRALIA AND ENGLAND
         System.out.println("Enter Team1 Name");
         team1Name = scan.next().toUpperCase();
         Team team1 = new Team(team1Name);
@@ -36,9 +39,8 @@ public class CricketGame {
         team2Name = scan.next().toUpperCase();
         Team team2 = new Team(team2Name);
 
-        Match m = new Match.getMatchDetails().setTeam1(team1).setTeam2(team2).setOvers(overs).build();
-        m.startMatch();
-        m.getResults();
+        MatchService match = new MatchService();
+        match.start(team1,team2,overs);
 
     }
 }
