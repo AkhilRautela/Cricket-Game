@@ -8,6 +8,7 @@ public class Inning {
     public Team battingTeam;
     public Team bowlingTeam;
     public int overs;
+    public ArrayList<Over> Overs;
     public ArrayList<Integer> scoreOfPlayers;
     public ArrayList<Integer> wicketsTaken;
     public ArrayList<Boolean> isOut;
@@ -22,6 +23,7 @@ public class Inning {
         this.scoreOfPlayers = new ArrayList<Integer>();
         this.wicketsTaken = new ArrayList<Integer>();
         this.isOut = new ArrayList<Boolean>();
+        this.Overs = new ArrayList<Over>();
 
         for (int i = 0; i < 11; i++) {
             this.scoreOfPlayers.add(0);
