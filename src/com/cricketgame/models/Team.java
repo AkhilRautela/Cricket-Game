@@ -18,11 +18,11 @@ public class Team {
             int ballers = 0;
 
             for (int i = 0; i < 11; i++) {
-                if(ballers <= Constants.MAX_NUMBER_OF_BALLERS) {
-                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(5, 10), PlayerType.BALLER));
+                if(ballers > Constants.MAX_NUMBER_OF_BALLERS) {
+                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(7, 10), PlayerType.BOWLER));
                 }
                 else {
-                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(5, 10), PlayerType.BATSMAN));
+                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(7, 10), PlayerType.BATSMAN));
                 }
                 ballers += 1;
             }

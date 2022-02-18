@@ -23,7 +23,7 @@ public class InningService {
         System.out.println("\n ==> " + inning.battingTeam.name + " is Batting");
 
         for (int i = 1; i <= inning.overs; i++) {
-            currentBowlerIndex = MatchUtils.getRandomNumber(0, 10);
+            currentBowlerIndex = InningUtils.getBowlerForTheOver(inning.bowlingTeam.players);
             if (checkScoreMoreThenOppositeTeam(inning) || checkAllOut(inning)) return;
             System.out.println("\n" + inning.bowlingTeam.players.get(currentBowlerIndex).name + " is Bowling and the over is = " + i + "\n");
             inning.Overs.add(startOver(inning));
@@ -34,7 +34,9 @@ public class InningService {
     public Over startOver(Inning inning) {
 
         Over over = new Over();
+
         over.bowler = inning.bowlingTeam.players.get(currentBowlerIndex);
+        playerFactor = updatePlayerFactor(inning);
 
         for (int j = 1; j <= Constants.TOTAL_BALLS_IN_ONE_OVER; j++) {
 
@@ -99,8 +101,7 @@ public class InningService {
 
         if (scoreInTheBall % 2 == 1) {
             swapPlayer(strikerIndex, nonStrikerIndex);
-            Player bowler = inning.bowlingTeam.players.get(currentBowlerIndex);
-            Player striker = inning.battingTeam.players.get(strikerIndex);
+            playerFactor = updatePlayerFactor(inning);
         }
 
         if (scoreInTheBall % 2 == 0) {
@@ -127,25 +128,20 @@ public class InningService {
         System.out.println("|" + inning.battingTeam.name + " " + inning.score + "/" + inning.wickets + "|");
     }
 
+    // will update on the basis of skills of batsman and bowler
+    private int updatePlayerFactor(Inning inning) {
+        Player bowler = inning.bowlingTeam.players.get(currentBowlerIndex);
+        Player striker = inning.battingTeam.players.get(strikerIndex);
 
-    private int updatePlayerFactor(Player striker, Player bowler) {
-        // will update on the basis of skills of batsman and bowler
-        if (striker.playertype == PlayerType.BATSMAN && bowler.playertype == PlayerType.BALLER) {
+        if (striker.playertype == PlayerType.BATSMAN) {
             if (striker.rating >= 8 && bowler.rating >= 8) {
-                return 8;
+                return 9;
             }
             if (striker.rating >= 8) return 8;
-            else return 9;
+            else return 10;
         }
-        if (bowler.playertype == PlayerType.BALLER) {
-            if (bowler.rating >= 8) {
-                return 10;
-            }
-        } else {
-            if (striker.rating >= 8) {
-                return 8;
-            }
-        }
-        return 9;
+
+        if(bowler.rating < 8) return 9;
+        return 10;
     }
 }

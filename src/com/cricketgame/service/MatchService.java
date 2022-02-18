@@ -2,6 +2,7 @@ package com.cricketgame.service;
 
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Match;
+import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
 
 public class MatchService {
@@ -22,9 +23,25 @@ public class MatchService {
         }
     }
 
+    public void showScoreBoard(){
+        System.out.println("\nStats for "  + inning1.battingTeam.name);
+        System.out.println("Player Name \t   PlayerType \t  Runs  Wickets");
+        for(int i = 0; i < 11; i++){
+            Player currentPlayer = inning1.battingTeam.players.get(i);
+            System.out.println(currentPlayer.name + "\t\t\t" + currentPlayer.playertype + "\t\t\t" + inning1.scoreOfPlayers.get(i) + "\t\t" + inning2.wicketsTaken.get(i));
+        }
+        System.out.println("\nStats for "  + inning2.battingTeam.name);
+        System.out.println("Player Name \t   PlayerType \t  Runs  Wickets");
+        for(int i = 0; i < 11; i++){
+            Player currentPlayer = inning2.battingTeam.players.get(i);
+            System.out.println(currentPlayer.name + "\t\t\t" + currentPlayer.playertype + "\t\t\t" + inning2.scoreOfPlayers.get(i) + "\t\t" + inning1.wicketsTaken.get(i));
+        }
+
+    }
+
 
     public void start(Match m) {
-        
+
         InningService inningService = new InningService();
 
         inning1 = new Inning(m.team1, m.team2 , m.overs,false , 0);

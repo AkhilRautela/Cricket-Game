@@ -43,7 +43,7 @@ class CricketGame {
 
         MatchService match = new MatchService();
         match.start(m);
-
+        match.showScoreBoard();
         match.getResults(m);
 
     }
