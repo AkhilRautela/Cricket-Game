@@ -5,9 +5,10 @@ public class Player {
     public int rating;
     public PlayerType playertype;
 
-    Player(String name, int rating) {
+    Player(String name, int rating , PlayerType playertype) {
         this.name = name;
         this.rating = rating;
+        this.playertype = playertype;
     }
 
     void getRating() {

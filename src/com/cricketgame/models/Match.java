@@ -6,7 +6,7 @@ public class Match {
 
     public Team team1;
     public Team team2;
-    int overs;
+    public int overs;
 
     Match(getMatchDetails MatchDetails) {
         this.team1 = MatchDetails.team1;

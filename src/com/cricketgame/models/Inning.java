@@ -12,12 +12,16 @@ public class Inning {
     public ArrayList<Integer> scoreOfPlayers;
     public ArrayList<Integer> wicketsTaken;
     public ArrayList<Boolean> isOut;
+    public boolean firstInningDone;
+    public int oppositeTeamScore;
 
-    public Inning(Team battingTeam, Team bowlingTeam, int overs) {
+    public Inning(Team battingTeam, Team bowlingTeam, int overs ,boolean firstInningDone, int oppositeTeamScore) {
 
         this.overs = overs;
         this.bowlingTeam = bowlingTeam;
         this.battingTeam = battingTeam;
+        this.firstInningDone = firstInningDone;
+        this.oppositeTeamScore = oppositeTeamScore;
         this.score = 0;
         this.wickets = 0;
         this.scoreOfPlayers = new ArrayList<Integer>();

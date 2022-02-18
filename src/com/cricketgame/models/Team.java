@@ -1,5 +1,6 @@
 package com.cricketgame.models;
 
+import com.cricketgame.Constants;
 import com.cricketgame.utils.MatchUtils;
 
 import java.util.ArrayList;
@@ -12,18 +13,20 @@ public class Team {
 
     public Team(String name) {
         if(MatchUtils.checkValidTeamName(name)){
+
             this.name = Teams.valueOf(name);
-            int cnt = 0;
+            int ballers = 0;
+
             for (int i = 0; i < 11; i++) {
-                players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(5,10)));
-                if(cnt <= 5) {
-                    players.get(i).playertype = PlayerType.BALLER;
+                if(ballers <= Constants.MAX_NUMBER_OF_BALLERS) {
+                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(5, 10), PlayerType.BALLER));
                 }
                 else {
-                    players.get(i).playertype = PlayerType.BATSMAN;
+                    players.add(new Player("player " + (i + 1), MatchUtils.getRandomNumber(5, 10), PlayerType.BATSMAN));
                 }
-                cnt += 1;
+                ballers += 1;
             }
+
         }
         else{
             System.out.println("Team name does not exist.");
