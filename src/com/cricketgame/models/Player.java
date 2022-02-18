@@ -1,9 +1,9 @@
 package com.cricketgame.models;
 
 public class Player {
-    public String name;
-    public int rating;
-    public PlayerType playertype;
+    private String name;
+    private int rating;
+    private PlayerType playertype;
 
     Player(String name, int rating , PlayerType playertype) {
         this.name = name;
@@ -11,9 +11,6 @@ public class Player {
         this.playertype = playertype;
     }
 
-    void getRating() {
-        // Getting rating from database
-    }
 
     void updateRating() {
         // Update Rating according to this game
@@ -22,4 +19,30 @@ public class Player {
     void pushRating() {
         // Push Rating to database according to this game
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getRating() {
+         return rating;
+    }
+
+    public PlayerType getPlayertype() {
+        return playertype;
+    }
+
+    public void setPlayertype(PlayerType playertype) {
+        this.playertype = playertype;
+    }
+
+
 }

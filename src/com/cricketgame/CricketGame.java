@@ -1,8 +1,8 @@
 package com.cricketgame;
 
-import com.cricketgame.models.Match;
 import com.cricketgame.models.Team;
 import com.cricketgame.service.MatchService;
+import com.cricketgame.utils.MatchUtils;
 
 import java.util.Scanner;
 
@@ -39,12 +39,10 @@ class CricketGame {
         team2Name = scan.next().toUpperCase();
         Team team2 = new Team(team2Name);
 
-        Match m = new Match.getMatchDetails().setTeam1(team1).setTeam2(team2).setOvers(overs).build();
-
         MatchService match = new MatchService();
-        match.start(m);
+        match.start(team1,team2,overs);
         match.showScoreBoard();
-        match.getResults(m);
+        match.getResults();
 
     }
 }

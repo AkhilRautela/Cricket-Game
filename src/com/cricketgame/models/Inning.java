@@ -3,36 +3,72 @@ package com.cricketgame.models;
 import java.util.ArrayList;
 
 public class Inning {
-    public int wickets;
-    public int score;
-    public Team battingTeam;
-    public Team bowlingTeam;
-    public int overs;
-    public ArrayList<Over> Overs;
-    public ArrayList<Integer> scoreOfPlayers;
-    public ArrayList<Integer> wicketsTaken;
-    public ArrayList<Boolean> isOut;
-    public boolean firstInningDone;
-    public int oppositeTeamScore;
+    Team battingTeam;
+    Team bowlingTeam;
+    int totalOvers;
+    ArrayList<Over> overs;
+    boolean firstInningDone;
+    int oppositeTeamScore;
 
-    public Inning(Team battingTeam, Team bowlingTeam, int overs ,boolean firstInningDone, int oppositeTeamScore) {
+    public Inning(Team battingTeam, Team bowlingTeam, int overs, boolean firstInningDone, int oppositeTeamScore) {
 
-        this.overs = overs;
+        this.totalOvers = overs;
         this.bowlingTeam = bowlingTeam;
         this.battingTeam = battingTeam;
         this.firstInningDone = firstInningDone;
         this.oppositeTeamScore = oppositeTeamScore;
-        this.score = 0;
-        this.wickets = 0;
-        this.scoreOfPlayers = new ArrayList<Integer>();
-        this.wicketsTaken = new ArrayList<Integer>();
-        this.isOut = new ArrayList<Boolean>();
-        this.Overs = new ArrayList<Over>();
+        this.overs = new ArrayList<Over>();
 
-        for (int i = 0; i < 11; i++) {
-            this.scoreOfPlayers.add(0);
-            this.wicketsTaken.add(0);
-            this.isOut.add(false);
-        }
+    }
+
+
+    public Team getBattingTeam() {
+        return battingTeam;
+    }
+
+    public void setBattingTeam(Team battingTeam) {
+        this.battingTeam = battingTeam;
+    }
+
+    public Team getBowlingTeam() {
+        return bowlingTeam;
+    }
+
+    public void setBowlingTeam(Team bowlingTeam) {
+        this.bowlingTeam = bowlingTeam;
+    }
+
+    public int getTotalOvers() {
+        return totalOvers;
+    }
+
+    public void setTotalOvers(int totalOvers) {
+        this.totalOvers = totalOvers;
+    }
+
+    public ArrayList<Over> getOvers() {
+        return overs;
+    }
+
+    public void setOvers(ArrayList<Over> overs) {
+        this.overs = overs;
+    }
+
+    public boolean isFirstInningDone() {
+        return firstInningDone;
+    }
+
+    public void setFirstInningDone(boolean firstInningDone) {
+        this.firstInningDone = firstInningDone;
+    }
+
+    public int getOppositeTeamScore() {
+        return oppositeTeamScore;
+    }
+
+    public void setOppositeTeamScore(int oppositeTeamScore) {
+        this.oppositeTeamScore = oppositeTeamScore;
     }
 }
+
+

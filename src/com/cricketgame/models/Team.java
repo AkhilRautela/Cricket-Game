@@ -8,8 +8,9 @@ import java.util.ArrayList;
 
 
 public class Team {
-    public Teams name;
-    public ArrayList <Player> players = new ArrayList<>();
+
+    private Teams name;
+    private ArrayList <Player> players = new ArrayList<>();
 
     public Team(String name) {
         if(MatchUtils.checkValidTeamName(name)){
@@ -33,5 +34,22 @@ public class Team {
             System.exit(0);
         }
     }
+
+    public Teams getName() {
+        return name;
+    }
+
+    public void setName(Teams name) {
+        this.name = name;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+    }
+
 
 }
