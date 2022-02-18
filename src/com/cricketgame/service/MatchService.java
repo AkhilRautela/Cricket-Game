@@ -24,14 +24,14 @@ public class MatchService {
 
 
     public void start(Match m) {
+        
+        InningService inningService = new InningService();
 
         inning1 = new Inning(m.team1, m.team2 , m.overs,false , 0);
-        InningService inningService1 = new InningService();
-        inningService1.startInning(inning1);
+        inningService.startInning(inning1);
 
         inning2 = new Inning(m.team2, m.team1, m.overs, true , inning1.score);
-        InningService inningService2 = new InningService();
-        inningService2.startInning(inning2);
+        inningService.startInning(inning2);
 
     }
 }
