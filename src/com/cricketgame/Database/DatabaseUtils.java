@@ -1,4 +1,4 @@
-package com.cricketgame.Database;
+package com.cricketgame.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

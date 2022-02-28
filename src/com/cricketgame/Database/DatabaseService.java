@@ -1,4 +1,4 @@
-package com.cricketgame.Database;
+package com.cricketgame.database;
 
 import com.cricketgame.Constants;
 

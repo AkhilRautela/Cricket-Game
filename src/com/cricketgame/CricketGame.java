@@ -1,36 +1,21 @@
 package com.cricketgame;
 
-import com.cricketgame.Database.DataInsertion;
+import com.cricketgame.database.DataInsertion;
 import com.cricketgame.models.Team;
-import com.cricketgame.Database.DatabaseService;
+import com.cricketgame.database.DatabaseService;
 import com.cricketgame.service.MatchService;
 
 import java.sql.SQLException;
 import java.util.Scanner;
 
 class CricketGame {
-    public static void main(String[] args) {
 
+    public static void main(String[] args) throws SQLException {
 
         int overs;
         String team1Name, team2Name;
         int choice;
         Scanner scan = new Scanner(System.in);
-
-
-        try {
-            DatabaseService.getInstance().createConnection();
-
-//        DataInsertion.InsertPlayersInDatabase(); For Creating players for a team .
-//        DataInsertion.InsertTeamInDatabase();  For inserting teams in the database from the team enum.
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-
-
 
 
         System.out.println("Enter the type of Game");
@@ -49,6 +34,8 @@ class CricketGame {
         }
 
 
+        startDatabaseConnection(); // Starting Connection to the database
+
         // Teams available in enums are INDIA PAKISTAN AUSTRALIA AND ENGLAND
         System.out.println("Enter Team1 Name");
         team1Name = scan.next().toUpperCase();
@@ -64,5 +51,13 @@ class CricketGame {
         match.showScoreBoard();
         match.getResults();
 
+    }
+
+    public static void startDatabaseConnection(){
+        try {
+            DatabaseService.getInstance().createConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

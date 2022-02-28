@@ -1,10 +1,13 @@
 package com.cricketgame.service;
 
-import com.cricketgame.Database.DatabaseService;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
+import com.cricketgame.repositories.InningRepository;
+import com.cricketgame.repositories.MatchRepository;
 import com.cricketgame.utils.MatchUtils;
+
+import java.sql.SQLException;
 
 public class MatchService {
 
@@ -42,12 +45,16 @@ public class MatchService {
     }
 
 
-    public void start(Team team1, Team team2, int overs) {
+    public void start(Team team1, Team team2, int overs) throws SQLException {
+
+        MatchRepository.createMatch(overs);
 
         inning1 = new Inning(team1, team2 , overs,false , 0);
+        InningRepository.createInning(team1,team2);
         inningService.startInning(inning1);
 
         inning2 = new Inning(team2, team1, overs, true , MatchUtils.getScore(inning1));
+        InningRepository.createInning(team2,team1);
         inningService.startInning(inning2);
 
     }

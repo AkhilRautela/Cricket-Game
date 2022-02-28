@@ -1,4 +1,4 @@
-package com.cricketgame.Database;
+package com.cricketgame.database;
 
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.models.enums.Teams;
@@ -23,23 +23,19 @@ public class DataInsertion {
     public static void InsertPlayersInDatabase() throws SQLException {
         for(Teams name : Teams.values()){
             int cnt = 1;
+            int teamid = DatabaseUtils.getTeamId(name.toString());
+            for(int j = 0; j <= 5; j++){
+                String query = "INSERT INTO PLAYERDETAILS(name,rating,playertype,teamid) VALUES('player " + cnt +"',10,'"+ PlayerType.BATSMAN.toString() +"'," + teamid +")";
+                ResultSet resultSet = DatabaseService.insertData(query);
+                cnt++;
+            }
             for(int i = 0; i < 5; i++){
-                String query = "INSERT INTO PLAYERDETAILS(name,rating,playertype) VALUES('player " + cnt +"',10,'"+ PlayerType.BOWLER.toString() +"')";
+                String query = "INSERT INTO PLAYERDETAILS(name,rating,playertype,teamid) VALUES('player " + cnt +"',10,'"+ PlayerType.BOWLER.toString() +"',"+  teamid + ")";
 //                System.out.println(query);
                 ResultSet resultSet = DatabaseService.insertData(query);
-                resultSet.next();
-                String relationQuery = "INSERT INTO TEAM VALUES(" + DatabaseUtils.getTeamId(name.toString()) + "," + resultSet.getInt(1) + ")";
-                DatabaseService.insertData(relationQuery);
                 cnt++;
             }
-            for(int j = 0; j <= 5; j++){
-                String query = "INSERT INTO PLAYERDETAILS(name,rating,playertype) VALUES('player " + cnt +"',10,'"+ PlayerType.BATSMAN.toString() +"')";
-                ResultSet resultSet = DatabaseService.insertData(query);
-                resultSet.next();
-                String relationQuery = "INSERT INTO TEAM VALUES(" + DatabaseUtils.getTeamId(name.toString()) + "," + resultSet.getInt(1) + ")";
-                DatabaseService.insertData(relationQuery);
-                cnt++;
-            }
+
 
         }
     }

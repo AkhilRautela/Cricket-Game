@@ -7,19 +7,10 @@ public class Player {
     private int rating;
     private PlayerType playertype;
 
-    Player(String name, int rating , PlayerType playertype) {
+    public Player(String name, int rating, PlayerType playertype) {
         this.name = name;
         this.rating = rating;
         this.playertype = playertype;
-    }
-
-
-    void updateRating() {
-        // Update Rating according to this game
-    }
-
-    void pushRating() {
-        // Push Rating to database according to this game
     }
 
     public String getName() {
