@@ -1,5 +1,7 @@
 package com.cricketgame.models;
 
+import com.cricketgame.models.enums.BallType;
+
 public class Ball {
 
     private BallType ballType;

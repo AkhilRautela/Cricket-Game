@@ -6,4 +6,7 @@ public class Constants {
     public static int TOTAL_BALLS_IN_ONE_OVER = 6;
     public static int MAX_RUNS_IN_ONE_BALL = 6;
     public static int MAX_NUMBER_OF_BALLERS = 5;
+    public static String url = "jdbc:mysql://localhost:3306/CricketGame";
+    public static String username = "root";
+    public static String password = "Tekion@123";
 }

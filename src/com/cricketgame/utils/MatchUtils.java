@@ -1,6 +1,8 @@
 package com.cricketgame.utils;
 
 import com.cricketgame.models.*;
+import com.cricketgame.models.enums.BallType;
+import com.cricketgame.models.enums.Teams;
 
 import java.util.Random;
 

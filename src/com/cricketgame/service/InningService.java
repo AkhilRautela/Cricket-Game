@@ -2,6 +2,8 @@ package com.cricketgame.service;
 
 import com.cricketgame.Constants;
 import com.cricketgame.models.*;
+import com.cricketgame.models.enums.BallType;
+import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.utils.InningUtils;
 import com.cricketgame.utils.MatchUtils;
 
@@ -88,7 +90,9 @@ public class InningService {
         String strikerName = inning.getBattingTeam().getPlayers().get(strikerIndex).getName();
 
         if (scoreInTheBall % 2 == 1) {
-            InningUtils.swapPlayer(strikerIndex, nonStrikerIndex);
+            int batsmanOnPitch[] = InningUtils.swapPlayer(strikerIndex, nonStrikerIndex);
+            strikerIndex = batsmanOnPitch[0];
+            nonStrikerIndex = batsmanOnPitch[1];
             playerFactor = updatePlayerFactor(inning);
         }
 

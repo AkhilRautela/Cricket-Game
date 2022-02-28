@@ -1,5 +1,7 @@
 package com.cricketgame.models;
 
+import com.cricketgame.models.enums.PlayerType;
+
 public class Player {
     private String name;
     private int rating;

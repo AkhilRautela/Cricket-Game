@@ -1,4 +1,4 @@
-package com.cricketgame.models;
+package com.cricketgame.models.enums;
 
 public enum BallType {
     RUN,

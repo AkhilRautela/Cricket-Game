@@ -2,6 +2,8 @@ package com.cricketgame.utils;
 
 import com.cricketgame.Constants;
 import com.cricketgame.models.*;
+import com.cricketgame.models.enums.BallType;
+import com.cricketgame.models.enums.PlayerType;
 
 import java.util.ArrayList;
 
@@ -51,10 +53,11 @@ public class InningUtils {
     }
 
     // swap striker and non-striker for odd runs
-    public static void swapPlayer(int strikerIndex, int nonStrikerIndex) {
+    public static int[] swapPlayer(int strikerIndex, int nonStrikerIndex) {
         int temp = strikerIndex;
         strikerIndex = nonStrikerIndex;
         nonStrikerIndex = temp;
+        return new int[]{strikerIndex, nonStrikerIndex};
     }
 
 }
