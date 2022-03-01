@@ -52,4 +52,14 @@ public class InningRepository {
         }
     }
 
+    public static ArrayList<Integer> getInnings(int matchId) throws SQLException {
+
+        String query = "SELECT * FROM INNINGDETAILS WHERE MATCHID =" + matchId;
+        ResultSet result = DatabaseService.getResult(query);
+        ArrayList <Integer> inningsIds = new ArrayList<Integer>();
+        while(result.next()){
+            inningsIds.add(result.getInt(1));
+        }
+        return inningsIds;
+    }
 }

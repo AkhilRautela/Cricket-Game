@@ -1,6 +1,7 @@
 package com.cricketgame;
 
 public class Constants {
+    public static final int ANY_CONSTANT = 20;
     public static int PLAYER_FACTOR = 9;
     public static int TOTAL_WICKETS = 10;
     public static int TOTAL_BALLS_IN_ONE_OVER = 6;

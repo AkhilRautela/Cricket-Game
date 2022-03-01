@@ -18,6 +18,10 @@ public class InningService {
         this.playerFactor = Constants.PLAYER_FACTOR;
     }
 
+    /**
+     * Start the inning
+     * @param inning
+     */
     public void startInning(Inning inning) {
         this.strikerIndex = 0;
         this.nonStrikerIndex = 1;

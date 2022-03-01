@@ -61,5 +61,21 @@ public class MatchService {
 
     }
 
+    public Inning getInning1() {
+        return inning1;
+    }
+
+    public void setInning1(Inning inning1) {
+        this.inning1 = inning1;
+    }
+
+    public Inning getInning2() {
+        return inning2;
+    }
+
+    public void setInning2(Inning inning2) {
+        this.inning2 = inning2;
+    }
+
 
 }

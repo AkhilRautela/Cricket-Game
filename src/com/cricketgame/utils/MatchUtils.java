@@ -49,7 +49,7 @@ public class MatchUtils {
         for (int i = 0; i < inning.getOvers().size(); i++) {
             Over over = inning.getOvers().get(i);
             for (int j = 0; j < over.getBalls().size(); j++) {
-                if(over.getBalls().get(j).getStriker() == player) score += over.getBalls().get(j).getRunsOnTheBall();
+                if(over.getBalls().get(j).getStriker().getName().equals(player.getName())) score += over.getBalls().get(j).getRunsOnTheBall();
             }
         }
         return score;
@@ -59,7 +59,7 @@ public class MatchUtils {
         int wicketsTaken = 0;
         for (int i = 0; i < inning.getOvers().size(); i++) {
             Over over = inning.getOvers().get(i);
-            if(over.getBowler() == player) {
+            if(over.getBowler().getName().equals(player.getName())) {
                 for (int j = 0; j < over.getBalls().size(); j++) {
                     if (over.getBalls().get(j).getBallType() == BallType.WICKET) wicketsTaken += 1;
                 }

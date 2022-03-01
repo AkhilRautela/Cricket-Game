@@ -3,6 +3,7 @@ package com.cricketgame;
 import com.cricketgame.database.DataInsertion;
 import com.cricketgame.models.Team;
 import com.cricketgame.database.DatabaseService;
+import com.cricketgame.service.DataFetchService;
 import com.cricketgame.service.MatchService;
 
 import java.sql.SQLException;
@@ -10,13 +11,46 @@ import java.util.Scanner;
 
 class CricketGame {
 
+    static Scanner scan;
+
+
     public static void main(String[] args) throws SQLException {
 
-        int overs;
-        String team1Name, team2Name;
+        scan = new Scanner(System.in);
         int choice;
-        Scanner scan = new Scanner(System.in);
 
+        startDatabaseConnection(); // Starting Connection to the database
+
+        System.out.println("Enter 1 for getting details of Previous Match \nEnter 2 for play an New Game");
+        choice = scan.nextInt();
+
+        switch (choice){
+            case 1:
+                handleFetchMatchDetails();
+                break;
+            case 2:
+                handleNewMatch();
+                break;
+            default:
+                System.out.println("Invalid Option");
+                System.exit(0);
+        }
+
+    }
+
+    private static void handleFetchMatchDetails() throws SQLException {
+        int matchId;
+        System.out.println("Enter The MatchId you want to retrieve the match");
+        matchId = scan.nextInt();
+        DataFetchService dataFetchService = new DataFetchService();
+        dataFetchService.getMatch(matchId);
+        dataFetchService.getResults();
+    }
+
+    private static void handleNewMatch() throws SQLException {
+        int overs;
+        int choice;
+        String team1Name, team2Name;
 
         System.out.println("Enter the type of Game");
         System.out.println("1 -> For ODI \t 2-> For T20");
@@ -33,9 +67,6 @@ class CricketGame {
                 overs = 1;
         }
 
-
-        startDatabaseConnection(); // Starting Connection to the database
-
         // Teams available in enums are INDIA PAKISTAN AUSTRALIA AND ENGLAND
         System.out.println("Enter Team1 Name");
         team1Name = scan.next().toUpperCase();
@@ -45,12 +76,10 @@ class CricketGame {
         team2Name = scan.next().toUpperCase();
         Team team2 = new Team(team2Name);
 
-
         MatchService match = new MatchService();
         match.start(team1,team2,overs);
         match.showScoreBoard();
         match.getResults();
-
     }
 
     public static void startDatabaseConnection(){
