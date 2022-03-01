@@ -52,10 +52,12 @@ public class MatchService {
         inning1 = new Inning(team1, team2 , overs,false , 0);
         InningRepository.createInning(team1,team2);
         inningService.startInning(inning1);
+        InningRepository.insertInningData(inning1);
 
         inning2 = new Inning(team2, team1, overs, true , MatchUtils.getScore(inning1));
         InningRepository.createInning(team2,team1);
         inningService.startInning(inning2);
+        InningRepository.insertInningData(inning2);
 
     }
 
