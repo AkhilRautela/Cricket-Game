@@ -11,7 +11,6 @@ public class InningService {
 
     int strikerIndex;
     int nonStrikerIndex;
-    int currentBowlerIndex;
     int playerFactor;
 
     InningService() {
@@ -29,22 +28,22 @@ public class InningService {
         System.out.println("\n ==> " + inning.getBattingTeam().getName() + " is Batting");
 
         for (int i = 1; i <= inning.getTotalOvers(); i++) {
-            currentBowlerIndex = InningUtils.getBowlerForTheOver(inning.getBowlingTeam().getPlayers());
+            int currentBowlerIndex = InningUtils.getBowlerForTheOver(inning.getBowlingTeam().getPlayers());
             if (InningUtils.checkScoreMoreThenOppositeTeam(inning) || InningUtils.checkAllOut(inning)) return;
             System.out.println("\n" + inning.getBowlingTeam().getPlayers().get(currentBowlerIndex).getName() + " is Bowling and the over is = " + i + "\n");
             Over over = new Over();
             inning.getOvers().add(over);
-            startOver(inning,i - 1);
+            startOver(inning,i - 1, currentBowlerIndex);
             showScoreBoard(inning);
         }
 
     }
 
-    public void startOver(Inning inning, int currentOver) {
+    public void startOver(Inning inning, int currentOver, int currentBowlerIndex) {
 
         inning.getOvers().get(currentOver).setBowler(inning.getBowlingTeam().getPlayers().get(currentBowlerIndex));
 
-        playerFactor = updatePlayerFactor(inning);
+        playerFactor = updatePlayerFactor(inning, currentBowlerIndex);
 
         for (int j = 1; j <= Constants.TOTAL_BALLS_IN_ONE_OVER; j++) {
 
@@ -74,7 +73,7 @@ public class InningService {
             ball.setBallType(BallType.RUN);
             ball.setRunsOnTheBall(scoreInTheBall);
             inning.getOvers().get(currentOver).getBalls().add(ball);
-            handleRuns(scoreInTheBall, inning);
+            handleRuns(scoreInTheBall, inning, currentBowlerIndex);
             showScoreBoard(inning);
 
             try {
@@ -89,7 +88,7 @@ public class InningService {
 
 
     // handle runs in striker hits the ball
-    public void handleRuns(int scoreInTheBall, Inning inning) {
+    public void handleRuns(int scoreInTheBall, Inning inning, int currentBowlerIndex) {
 
         String strikerName = inning.getBattingTeam().getPlayers().get(strikerIndex).getName();
 
@@ -97,7 +96,7 @@ public class InningService {
             int batsmanOnPitch[] = InningUtils.swapPlayer(strikerIndex, nonStrikerIndex);
             strikerIndex = batsmanOnPitch[0];
             nonStrikerIndex = batsmanOnPitch[1];
-            playerFactor = updatePlayerFactor(inning);
+            playerFactor = updatePlayerFactor(inning, currentBowlerIndex);
         }
 
         if (scoreInTheBall % 2 == 0) {
@@ -112,7 +111,7 @@ public class InningService {
     }
 
     // will update on the basis of skills of batsman and bowler
-    private int updatePlayerFactor(Inning inning) {
+    private int updatePlayerFactor(Inning inning, int currentBowlerIndex) {
         Player bowler = inning.getBowlingTeam().getPlayers().get(currentBowlerIndex);
         Player striker = inning.getBattingTeam().getPlayers().get(strikerIndex);
 
