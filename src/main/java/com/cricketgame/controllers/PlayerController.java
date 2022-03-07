@@ -20,6 +20,7 @@ import java.util.Map;
 @RestController()
 @RequestMapping("/api/player")
 public class PlayerController {
+
     @RequestMapping("/playerdetails/{playerId}/{matchId}")
     Map<String, String> getPlayerDetailsForAnMatch(@PathVariable(value = "playerId") int playerId, @PathVariable(value = "matchId") int matchId) throws SQLException {
         DataFetchService dfs = new DataFetchService();
