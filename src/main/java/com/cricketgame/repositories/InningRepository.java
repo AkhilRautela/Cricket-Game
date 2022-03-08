@@ -25,12 +25,14 @@ public class InningRepository {
     PlayerRepository playerRepository;
     @Autowired
     MatchRepository matchRepository;
+    @Autowired
+    DatabaseService databaseService;
 
     public ResultSet createInning(Team team1, Team team2) throws SQLException {
         battingTeamId = teamRepository.getTeamId(String.valueOf(team1.getName()));
         bowlingTeamId = teamRepository.getTeamId(String.valueOf(team2.getName()));
         String query = "INSERT INTO INNINGDETAILS(battingteam,bowlingteam,matchid) values(" + battingTeamId + "," + bowlingTeamId + "," + matchRepository.matchId +")" ;
-        ResultSet result = DatabaseService.insertData(query);
+        ResultSet result = databaseService.insertData(query);
         result.next();
         inningId = result.getInt(1);
         return result;
@@ -42,7 +44,7 @@ public class InningRepository {
         for(Over over : overs){
             int bowlerId = playerRepository.getPlayerId(bowlingTeamId,over.getBowler().getName());
             String query = "INSERT INTO OVERDETAILS(playerid,inningid) VALUES(" + bowlerId + "," + inningId + ")";
-            ResultSet result = DatabaseService.insertData(query);
+            ResultSet result = databaseService.insertData(query);
             result.next();
             int overId = result.getInt(1);
             insertBallDetails(overId,over);
@@ -58,14 +60,14 @@ public class InningRepository {
             int runsOnTheBall = ball.getRunsOnTheBall();
             String ballType = ball.getBallType().toString();
             String query = "INSERT INTO BALLDETAILS(playerid,runs,balltype,overid,inningid) values(" + batsmanId + "," + runsOnTheBall + ",'" + ballType +"'," + overId +"," + inningId +")";
-            DatabaseService.insertData(query);
+            databaseService.insertData(query);
         }
     }
 
     public  ArrayList<Integer> getInnings(int matchId) throws SQLException {
 
         String query = "SELECT * FROM INNINGDETAILS WHERE MATCHID =" + matchId;
-        ResultSet result = DatabaseService.getResult(query);
+        ResultSet result = databaseService.getResult(query);
         ArrayList <Integer> inningsIds = new ArrayList<Integer>();
         while(result.next()){
             inningsIds.add(result.getInt(1));

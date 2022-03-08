@@ -5,7 +5,8 @@ import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.models.enums.Teams;
-import org.springframework.stereotype.Component;
+import com.cricketgame.utils.MatchUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -15,12 +16,15 @@ import java.util.ArrayList;
 @Repository
 public class TeamRepository {
 
+    @Autowired
+    DatabaseService databaseService;
+
     public ArrayList<Player> getPlayersInTeam(String name) throws SQLException {
 
         int teamid = getTeamId(name);
         ArrayList <Player> players = new ArrayList<Player>();
         String query = "SELECT * FROM PLAYERDETAILS WHERE TEAMID = " + teamid;
-        ResultSet playerDetails = DatabaseService.getResult(query);
+        ResultSet playerDetails = databaseService.getResult(query);
 
         while(playerDetails.next()){
             players.add(new Player(playerDetails.getString(2),playerDetails.getInt(3), PlayerType.valueOf(playerDetails.getString(4))));
@@ -31,7 +35,7 @@ public class TeamRepository {
 
     public int getTeamId(String name) throws SQLException {
         String query = "Select * from teamdetails where name = '" + name + "'";
-        ResultSet result = DatabaseService.getResult(query);
+        ResultSet result = databaseService.getResult(query);
         result.next();
         return result.getInt(1);
     }
@@ -39,10 +43,13 @@ public class TeamRepository {
 
     public Team createTeam(int teamid) throws SQLException {
         String query = "SELECT * FROM TEAMDETAILS WHERE TEAMID = " + teamid;
-        ResultSet result = DatabaseService.getResult(query);
+        ResultSet result = databaseService.getResult(query);
         result.next();
         Team team = new Team();
-        team.initialize(result.getString(2));
+        String teamName = result.getString(2);
+        team.setName(Teams.valueOf(teamName));
+        team.setPlayers(getPlayersInTeam(teamName));
         return team;
     }
+
 }

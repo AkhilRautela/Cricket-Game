@@ -1,18 +1,19 @@
 package com.cricketgame.database;
 
 import com.cricketgame.constants.Constants;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
+import java.awt.*;
 import java.sql.*;
 
+@Repository
 public class DatabaseService {
 
-    private static Connection connection;
-    private final static DatabaseService databaseService = new DatabaseService();
+    public Connection connection;
 
-    private DatabaseService(){}
-
-    public static DatabaseService getInstance(){
-        return databaseService;
+    public DatabaseService() throws SQLException {
+        createConnection();
     }
 
     /**
@@ -29,7 +30,7 @@ public class DatabaseService {
      * @return
      * @throws SQLException
      */
-    public static ResultSet getResult(String query) throws SQLException {
+    public  ResultSet getResult(String query) throws SQLException {
         Statement statement = connection.createStatement();
         return statement.executeQuery(query);
     }
@@ -40,7 +41,7 @@ public class DatabaseService {
      * @return
      * @throws SQLException
      */
-    public static ResultSet insertData(String query) throws  SQLException{
+    public ResultSet insertData(String query) throws  SQLException{
         PreparedStatement prepareStatement= connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         prepareStatement.execute();
         return prepareStatement.getGeneratedKeys();

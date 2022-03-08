@@ -33,6 +33,8 @@ public class DataFetchService {
     InningRepository inningRepository;
     @Autowired
     PlayerRepository playerRepository;
+    @Autowired
+    DatabaseService databaseService;
 
     public void getMatch(int matchId) throws SQLException {
         ArrayList<Integer> inningsId = inningRepository.getInnings(matchId);
@@ -42,7 +44,7 @@ public class DataFetchService {
 
     public Inning createInnings(int inningId) throws SQLException {
         String query = "SELECT * FROM INNINGDETAILS WHERE INNINGID = " + inningId;
-        ResultSet resultSet = DatabaseService.getResult(query);
+        ResultSet resultSet = databaseService.getResult(query);
         resultSet.next();
         Team battingTeam = teamRepository.createTeam(resultSet.getInt(2));
         Team bowlingTeam = teamRepository.createTeam(resultSet.getInt(3));
@@ -54,7 +56,7 @@ public class DataFetchService {
 
     private ArrayList<Over> createOvers(int inningId) throws SQLException {
         String query = "SELECT * FROM OVERDETAILS WHERE INNINGID = " + inningId;
-        ResultSet resultSet = DatabaseService.getResult(query);
+        ResultSet resultSet = databaseService.getResult(query);
         ArrayList <Over> overs = new ArrayList<Over>();
 
         while(resultSet.next()){
@@ -74,7 +76,7 @@ public class DataFetchService {
     private ArrayList<Ball> createBalls(int overId) throws SQLException {
 
         String query = "SELECT * FROM BALLDETAILS WHERE OVERID = " + overId;
-        ResultSet resultSet = DatabaseService.getResult(query);
+        ResultSet resultSet = databaseService.getResult(query);
         ArrayList <Ball> balls = new ArrayList<Ball>();
 
         while(resultSet.next()){
@@ -160,7 +162,7 @@ public class DataFetchService {
     private boolean checkPlayerPresent(Team team, int playerId) throws SQLException {
         int teamId = teamRepository.getTeamId(String.valueOf(team.getName()));
         String query = "SELECT * FROM PLAYERDETAILS WHERE teamid = " + teamId + " and playerid = " + playerId;
-        ResultSet result = DatabaseService.getResult(query);
+        ResultSet result = databaseService.getResult(query);
         int noOfRows = 0;
         while(result.next()){
             noOfRows += 1;
