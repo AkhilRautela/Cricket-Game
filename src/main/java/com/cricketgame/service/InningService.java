@@ -6,7 +6,9 @@ import com.cricketgame.models.enums.BallType;
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.utils.InningUtils;
 import com.cricketgame.utils.MatchUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InningService {
 
     int strikerIndex;
@@ -75,12 +77,6 @@ public class InningService {
             inning.getOvers().get(currentOver).getBalls().add(ball);
             handleRuns(scoreInTheBall, inning, currentBowlerIndex);
             showScoreBoard(inning);
-
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
         }
 

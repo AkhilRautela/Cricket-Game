@@ -5,31 +5,42 @@ import com.cricketgame.models.Ball;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Over;
 import com.cricketgame.models.Team;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+@Repository
 public class InningRepository {
 
     private static int inningId;
     private static int battingTeamId;
     private static int bowlingTeamId;
+    @Autowired
+    TeamRepository teamRepository;
+    @Autowired
+    PlayerRepository playerRepository;
+    @Autowired
+    MatchRepository matchRepository;
 
-    public static void createInning(Team team1, Team team2) throws SQLException {
-        battingTeamId = TeamRepository.getTeamId(String.valueOf(team1.getName()));
-        bowlingTeamId = TeamRepository.getTeamId(String.valueOf(team2.getName()));
-        String query = "INSERT INTO INNINGDETAILS(battingteam,bowlingteam,matchid) values(" + battingTeamId + "," + bowlingTeamId + "," + MatchRepository.matchId +")" ;
+    public ResultSet createInning(Team team1, Team team2) throws SQLException {
+        battingTeamId = teamRepository.getTeamId(String.valueOf(team1.getName()));
+        bowlingTeamId = teamRepository.getTeamId(String.valueOf(team2.getName()));
+        String query = "INSERT INTO INNINGDETAILS(battingteam,bowlingteam,matchid) values(" + battingTeamId + "," + bowlingTeamId + "," + matchRepository.matchId +")" ;
         ResultSet result = DatabaseService.insertData(query);
         result.next();
         inningId = result.getInt(1);
+        return result;
     }
 
-    public static void insertInningData(Inning inning) throws SQLException {
+    public void insertInningData(Inning inning) throws SQLException {
 
         ArrayList<Over> overs = inning.getOvers();
         for(Over over : overs){
-            int bowlerId = PlayerRepository.getPlayerId(bowlingTeamId,over.getBowler().getName());
+            int bowlerId = playerRepository.getPlayerId(bowlingTeamId,over.getBowler().getName());
             String query = "INSERT INTO OVERDETAILS(playerid,inningid) VALUES(" + bowlerId + "," + inningId + ")";
             ResultSet result = DatabaseService.insertData(query);
             result.next();
@@ -39,11 +50,11 @@ public class InningRepository {
 
     }
 
-    private static void insertBallDetails(int overId , Over over) throws SQLException {
+    public void insertBallDetails(int overId , Over over) throws SQLException {
 
         ArrayList <Ball> balls = over.getBalls();
         for(Ball ball : balls){
-            int batsmanId = PlayerRepository.getPlayerId(battingTeamId,ball.getStriker().getName());
+            int batsmanId = playerRepository.getPlayerId(battingTeamId,ball.getStriker().getName());
             int runsOnTheBall = ball.getRunsOnTheBall();
             String ballType = ball.getBallType().toString();
             String query = "INSERT INTO BALLDETAILS(playerid,runs,balltype,overid,inningid) values(" + batsmanId + "," + runsOnTheBall + ",'" + ballType +"'," + overId +"," + inningId +")";
@@ -51,7 +62,7 @@ public class InningRepository {
         }
     }
 
-    public static ArrayList<Integer> getInnings(int matchId) throws SQLException {
+    public  ArrayList<Integer> getInnings(int matchId) throws SQLException {
 
         String query = "SELECT * FROM INNINGDETAILS WHERE MATCHID =" + matchId;
         ResultSet result = DatabaseService.getResult(query);

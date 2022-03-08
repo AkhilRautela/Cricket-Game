@@ -1,18 +1,33 @@
 package com.cricketgame.service;
 
+import com.cricketgame.database.DatabaseService;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
 import com.cricketgame.repositories.InningRepository;
 import com.cricketgame.repositories.MatchRepository;
+import com.cricketgame.repositories.TeamRepository;
 import com.cricketgame.utils.MatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
+@Component
 public class MatchService {
 
-    InningService inningService = new InningService();
+    @Autowired
+    InningService inningService;
+    @Autowired
+    MatchRepository matchRepository;
+    @Autowired
+    InningRepository inningRepository;
+    @Autowired
+    TeamRepository teamRepository;
     Inning inning1;
     Inning inning2;
 
@@ -49,17 +64,17 @@ public class MatchService {
 
     public void start(Team team1, Team team2, int overs) throws SQLException {
 
-        MatchRepository.createMatch(overs);
+        matchRepository.createMatch(overs);
 
         inning1 = new Inning(team1, team2 , overs,false , 0);
-        InningRepository.createInning(team1,team2);
+        inningRepository.createInning(team1,team2);
         inningService.startInning(inning1);
-        InningRepository.insertInningData(inning1);
+        inningRepository.insertInningData(inning1);
 
         inning2 = new Inning(team2, team1, overs, true , MatchUtils.getScore(inning1));
-        InningRepository.createInning(team2,team1);
+        inningRepository.createInning(team2,team1);
         inningService.startInning(inning2);
-        InningRepository.insertInningData(inning2);
+        inningRepository.insertInningData(inning2);
 
     }
 
@@ -80,4 +95,22 @@ public class MatchService {
     }
 
 
+    public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
+
+        Map <String, String> response = new HashMap<String, String>();
+      try{
+        Team team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
+        Team team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
+            start(team1, team2, overs);
+            showScoreBoard();
+            getResults();
+            response.put("status","1");
+            response.put("matchId", String.valueOf(matchRepository.matchId));
+        }
+        catch (Exception e){
+            response.put("Status", "0");
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
+    }
 }

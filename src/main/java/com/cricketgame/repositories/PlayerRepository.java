@@ -3,13 +3,16 @@ package com.cricketgame.repositories;
 import com.cricketgame.database.DatabaseService;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.enums.PlayerType;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Repository
 public class PlayerRepository {
 
-    public static int getPlayerId(int teamid , String name) throws SQLException {
+    public int getPlayerId(int teamid , String name) throws SQLException {
         String query = "SELECT * FROM PLAYERDETAILS WHERE TEAMID = " + teamid + " AND NAME = '" + name +"'";
 //        System.out.println(query);
         ResultSet result = DatabaseService.getResult(query);
@@ -17,7 +20,7 @@ public class PlayerRepository {
         return result.getInt(1);
     }
 
-    public static Player createPlayer(int playerId) throws SQLException {
+    public Player createPlayer(int playerId) throws SQLException {
         String query = "SELECT * FROM PLAYERDETAILS WHERE PLAYERID = " + playerId;
         ResultSet result = DatabaseService.getResult(query);
         result.next();

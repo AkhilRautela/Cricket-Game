@@ -3,11 +3,15 @@ package com.cricketgame.database;
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.models.enums.Teams;
 import com.cricketgame.repositories.TeamRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DataInsertion {
+
+    @Autowired
+    TeamRepository teamRepository;
 
     public static void InsertTeamInDatabase(){
         for(Teams name : Teams.values()){
@@ -21,10 +25,10 @@ public class DataInsertion {
         }
     }
 
-    public static void InsertPlayersInDatabase() throws SQLException {
+    public void InsertPlayersInDatabase() throws SQLException {
         for(Teams name : Teams.values()){
             int cnt = 1;
-            int teamid = TeamRepository.getTeamId(name.toString());
+            int teamid = teamRepository.getTeamId(name.toString());
             for(int j = 0; j <= 5; j++){
                 String query = "INSERT INTO PLAYERDETAILS(name,rating,playertype,teamid) VALUES('player " + cnt +"',10,'"+ PlayerType.BATSMAN.toString() +"'," + teamid +")";
                 ResultSet resultSet = DatabaseService.insertData(query);
