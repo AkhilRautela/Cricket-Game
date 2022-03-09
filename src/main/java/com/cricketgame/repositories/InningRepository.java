@@ -1,12 +1,12 @@
 package com.cricketgame.repositories;
 
-import com.cricketgame.database.DatabaseService;
+import com.cricketgame.database.DatabaseServiceImpl;
 import com.cricketgame.models.Ball;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Over;
 import com.cricketgame.models.Team;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -26,7 +26,7 @@ public class InningRepository {
     @Autowired
     MatchRepository matchRepository;
     @Autowired
-    DatabaseService databaseService;
+    DatabaseServiceImpl databaseService;
 
     public ResultSet createInning(Team team1, Team team2) throws SQLException {
         battingTeamId = teamRepository.getTeamId(String.valueOf(team1.getName()));
@@ -38,7 +38,7 @@ public class InningRepository {
         return result;
     }
 
-    public void insertInningData(Inning inning) throws SQLException {
+    public void insertInningData(@NonNull Inning inning) throws SQLException {
 
         ArrayList<Over> overs = inning.getOvers();
         for(Over over : overs){

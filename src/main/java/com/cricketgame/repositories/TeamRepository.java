@@ -1,11 +1,10 @@
 package com.cricketgame.repositories;
 
-import com.cricketgame.database.DatabaseService;
+import com.cricketgame.database.DatabaseServiceImpl;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.models.enums.Teams;
-import com.cricketgame.utils.MatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 public class TeamRepository {
 
     @Autowired
-    DatabaseService databaseService;
+    DatabaseServiceImpl databaseService;
 
     public ArrayList<Player> getPlayersInTeam(String name) throws SQLException {
 

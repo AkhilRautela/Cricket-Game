@@ -1,4 +1,4 @@
-package com.cricketgame.models.databasemodels;
+package com.cricketgame.models.databasemodels.Match;
 
 import java.util.ArrayList;
 

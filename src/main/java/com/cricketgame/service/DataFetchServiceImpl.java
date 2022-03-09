@@ -1,11 +1,13 @@
 package com.cricketgame.service;
 
 import com.cricketgame.constants.Constants;
-import com.cricketgame.database.DatabaseService;
+import com.cricketgame.database.DatabaseServiceImpl;
 import com.cricketgame.models.*;
-import com.cricketgame.models.databasemodels.MatchDetails;
-import com.cricketgame.models.databasemodels.PlayerDetails;
-import com.cricketgame.models.databasemodels.TeamDetails;
+import com.cricketgame.models.databasemodels.Match.MatchDetails;
+import com.cricketgame.models.databasemodels.Match.PlayerDetails;
+import com.cricketgame.models.databasemodels.Match.TeamDetails;
+import com.cricketgame.models.databasemodels.Team.PlayerInfo;
+import com.cricketgame.models.databasemodels.Team.TeamInfo;
 import com.cricketgame.models.enums.BallType;
 import com.cricketgame.repositories.InningRepository;
 import com.cricketgame.repositories.PlayerRepository;
@@ -14,7 +16,7 @@ import com.cricketgame.utils.MatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-public class DataFetchService {
+@Service
+public class DataFetchServiceImpl {
 
     Inning inning1;
     Inning inning2;
@@ -34,7 +36,9 @@ public class DataFetchService {
     @Autowired
     PlayerRepository playerRepository;
     @Autowired
-    DatabaseService databaseService;
+    DatabaseServiceImpl databaseService;
+    @Autowired
+    MatchServiceImpl matchService;
 
     public void getMatch(int matchId) throws SQLException {
         ArrayList<Integer> inningsId = inningRepository.getInnings(matchId);
@@ -54,7 +58,7 @@ public class DataFetchService {
         return inning;
     }
 
-    private ArrayList<Over> createOvers(int inningId) throws SQLException {
+    public ArrayList<Over> createOvers(int inningId) throws SQLException {
         String query = "SELECT * FROM OVERDETAILS WHERE INNINGID = " + inningId;
         ResultSet resultSet = databaseService.getResult(query);
         ArrayList <Over> overs = new ArrayList<Over>();
@@ -73,7 +77,7 @@ public class DataFetchService {
         return overs;
     }
 
-    private ArrayList<Ball> createBalls(int overId) throws SQLException {
+    public ArrayList<Ball> createBalls(int overId) throws SQLException {
 
         String query = "SELECT * FROM BALLDETAILS WHERE OVERID = " + overId;
         ResultSet resultSet = databaseService.getResult(query);
@@ -93,7 +97,6 @@ public class DataFetchService {
     }
 
     public void getResults() {
-        MatchService matchService = new MatchService();
         matchService.setInning1(inning1);
         matchService.setInning2(inning2);
         matchService.showScoreBoard();
@@ -144,18 +147,24 @@ public class DataFetchService {
         return playerdetail;
     }
 
-    public ResponseEntity<Object> getPlayerDetailsForMatch(int matchId, int playerId) throws SQLException {
-        getMatch(matchId);
-        Team team1 = inning1.getBattingTeam();
-        Team team2 = inning2.getBowlingTeam();
-        if(checkPlayerPresent(team1,playerId) || checkPlayerPresent(team2,playerId)) {
-            return fillPlayerDetails(inning2, inning1, playerId);
+    public ResponseEntity<Object> getPlayerDetailsForMatch(int matchId, int playerId){
+        Map<String, String> response = new HashMap<String, String>();
+        try {
+            getMatch(matchId);
+            Team team1 = inning1.getBattingTeam();
+            Team team2 = inning2.getBowlingTeam();
+            if (checkPlayerPresent(team1, playerId) || checkPlayerPresent(team2, playerId)) {
+                return fillPlayerDetails(inning2, inning1, playerId);
+            } else {
+                response.put("status", "0");
+                response.put("reason", "Player Not present in the teams of given match ID");
+                return new ResponseEntity<Object>(response, HttpStatus.OK);
+            }
         }
-        else{
-            Map<String, String> response = new HashMap<String, String>();
-            response.put("status" , "0");
-            response.put("reason" , "Player Not present in the teams of given match ID");
-            return new ResponseEntity<Object>(response, HttpStatus.OK);
+        catch (Exception e){
+            e.printStackTrace();
+            response.put("status", "0");
+            return new ResponseEntity<Object>(response,HttpStatus.OK);
         }
     }
 
@@ -172,10 +181,10 @@ public class DataFetchService {
 
     private ResponseEntity<Object> fillPlayerDetails(Inning inning2, Inning inning1, int playerId) throws SQLException {
         Map <String, String> response = new HashMap<String, String>();
-        Player player = playerRepository.createPlayer(playerId);
-        int playerScore = MatchUtils.getScoreOfPlayer(inning1, player) + MatchUtils.getScoreOfPlayer(inning2, player);
-        int wicketTaken = MatchUtils.getWicketsTakenByPlayer(inning1, player) + MatchUtils.getWicketsTakenByPlayer(inning2,player);
-        try {
+        try{
+            Player player = playerRepository.createPlayer(playerId);
+            int playerScore = MatchUtils.getScoreOfPlayer(inning1, player) + MatchUtils.getScoreOfPlayer(inning2, player);
+            int wicketTaken = MatchUtils.getWicketsTakenByPlayer(inning1, player) + MatchUtils.getWicketsTakenByPlayer(inning2,player);
             response.put("status", "1");
             response.put("playerId", String.valueOf(playerId));
             response.put("name", player.getName());
@@ -183,9 +192,45 @@ public class DataFetchService {
             response.put("wicket taken", String.valueOf(wicketTaken));
         }
         catch (Exception e){
+            e.printStackTrace();
             response.put("status","0");
         }
         return  new ResponseEntity<Object>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> getInfoOfTheTeam(String teamName) {
+
+        try {
+            int teamId = teamRepository.getTeamId(teamName);
+            Team team = teamRepository.createTeam(teamId);
+            TeamInfo teamInfo = new TeamInfo();
+            teamInfo.setId(teamId);
+            teamInfo.setName(team.getName().toString());
+            teamInfo.setPlayerInfos(getPlayersInfo(teamId,team));
+            return ResponseEntity.ok().body(teamInfo);
+        }
+        catch(Exception e){
+            Map <String, String> response = new HashMap<String, String>();
+            response.put("status","0");
+            response.put("reason","Team name does not exist in database");
+            return new ResponseEntity<Object>(response,HttpStatus.OK);
+        }
+    }
+
+    public ArrayList<PlayerInfo> getPlayersInfo(int teamId, Team team) throws SQLException {
+
+        ArrayList <PlayerInfo> playerInfos = new ArrayList<PlayerInfo>();
+
+        for(Player player : team.getPlayers()){
+            PlayerInfo playerInfo = new PlayerInfo();
+            playerInfo.setId(playerRepository.getPlayerId(teamId, player.getName()));
+            playerInfo.setName(player.getName());
+            playerInfo.setRating(player.getRating());
+            playerInfo.setType(player.getPlayertype().toString());
+            playerInfos.add(playerInfo);
+        }
+
+        return playerInfos;
     }
 
     public Inning getInning1() {
@@ -203,4 +248,6 @@ public class DataFetchService {
     public void setInning2(Inning inning2) {
         this.inning2 = inning2;
     }
+
+
 }

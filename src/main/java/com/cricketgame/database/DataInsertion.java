@@ -15,7 +15,7 @@ public class DataInsertion {
     @Autowired
     TeamRepository teamRepository;
     @Autowired
-    DatabaseService databaseService;
+    DatabaseServiceImpl databaseService;
 
     public void InsertTeamInDatabase(){
         for(Teams name : Teams.values()){

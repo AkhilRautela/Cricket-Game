@@ -6,16 +6,16 @@ import com.cricketgame.models.enums.BallType;
 import com.cricketgame.models.enums.PlayerType;
 import com.cricketgame.utils.InningUtils;
 import com.cricketgame.utils.MatchUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class InningService {
+@Service
+public class InningServiceImpl {
 
     int strikerIndex;
     int nonStrikerIndex;
     int playerFactor;
 
-    InningService() {
+    InningServiceImpl() {
         this.playerFactor = Constants.PLAYER_FACTOR;
     }
 

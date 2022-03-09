@@ -1,6 +1,5 @@
 package com.cricketgame.service;
 
-import com.cricketgame.database.DatabaseService;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
@@ -11,17 +10,17 @@ import com.cricketgame.utils.MatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
-public class MatchService {
+@Service
+public class MatchServiceImpl {
 
     @Autowired
-    InningService inningService;
+    InningServiceImpl inningService;
     @Autowired
     MatchRepository matchRepository;
     @Autowired
@@ -78,6 +77,25 @@ public class MatchService {
 
     }
 
+    public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
+
+        Map <String, String> response = new HashMap<String, String>();
+      try{
+            Team team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
+            Team team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
+            start(team1, team2, overs);
+            showScoreBoard();
+            getResults();
+            response.put("status","1");
+            response.put("matchId", String.valueOf(matchRepository.matchId));
+        }
+        catch (Exception e){
+            response.put("Status", "0");
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
+    }
+
     public Inning getInning1() {
         return inning1;
     }
@@ -92,25 +110,5 @@ public class MatchService {
 
     public void setInning2(Inning inning2) {
         this.inning2 = inning2;
-    }
-
-
-    public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
-
-        Map <String, String> response = new HashMap<String, String>();
-      try{
-        Team team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
-        Team team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
-            start(team1, team2, overs);
-            showScoreBoard();
-            getResults();
-            response.put("status","1");
-            response.put("matchId", String.valueOf(matchRepository.matchId));
-        }
-        catch (Exception e){
-            response.put("Status", "0");
-            e.printStackTrace();
-        }
-        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 }

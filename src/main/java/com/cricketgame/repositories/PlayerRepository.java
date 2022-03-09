@@ -1,10 +1,9 @@
 package com.cricketgame.repositories;
 
-import com.cricketgame.database.DatabaseService;
+import com.cricketgame.database.DatabaseServiceImpl;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.enums.PlayerType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -14,7 +13,7 @@ import java.sql.SQLException;
 public class PlayerRepository {
 
     @Autowired
-    DatabaseService databaseService;
+    DatabaseServiceImpl databaseService;
 
     public int getPlayerId(int teamid , String name) throws SQLException {
         String query = "SELECT * FROM PLAYERDETAILS WHERE TEAMID = " + teamid + " AND NAME = '" + name +"'";

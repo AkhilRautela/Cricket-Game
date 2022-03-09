@@ -1,8 +1,8 @@
 package com.cricketgame.controllers;
 
 
-import com.cricketgame.service.DataFetchService;
-import com.cricketgame.service.MatchService;
+import com.cricketgame.service.DataFetchServiceImpl;
+import com.cricketgame.service.MatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -20,9 +20,9 @@ import java.sql.SQLException;
 public class MatchController {
 
     @Autowired
-    DataFetchService dataFetchService;
+    DataFetchServiceImpl dataFetchService;
     @Autowired
-    MatchService matchService;
+    MatchServiceImpl matchService;
 
 
     @GetMapping("/matchdetails/{id}")

@@ -1,25 +1,22 @@
 package com.cricketgame.database;
 
 import com.cricketgame.constants.Constants;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.awt.*;
+import javax.annotation.PostConstruct;
 import java.sql.*;
 
 @Repository
-public class DatabaseService {
+public class DatabaseServiceImpl {
 
     public Connection connection;
 
-    public DatabaseService() throws SQLException {
-        createConnection();
-    }
 
     /**
      * Create database connection for application.
      * @throws SQLException
      */
+    @PostConstruct
     public void createConnection() throws SQLException {
         this.connection = DriverManager.getConnection(Constants.url, Constants.username, Constants.password);
     }
