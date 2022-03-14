@@ -35,7 +35,7 @@ public class TeamRepository {
     public int getTeamId(String name) throws SQLException {
         String query = "Select * from teamdetails where name = '" + name + "'";
         ResultSet result = databaseService.getResult(query);
-        result.next();
+        if(result.next() == false) return -1;
         return result.getInt(1);
     }
 

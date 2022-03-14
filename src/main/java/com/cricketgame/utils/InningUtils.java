@@ -17,7 +17,7 @@ public class InningUtils {
      */
     public static int getNextBatsman(int strikerIndex, int nonStrikerIndex , Inning inning){
         for(int i = 0; i < 11; i++){
-            if(!isOut(inning, inning.getBattingTeam().getPlayers().get(i)) && i != nonStrikerIndex){
+            if(isOut(inning, inning.getBattingTeam().getPlayers().get(i)) == null && i != nonStrikerIndex){
                 return i;
             }
         }
@@ -30,17 +30,17 @@ public class InningUtils {
      * @param player
      * @return
      */
-    public static boolean isOut(Inning inning, Player player){
+    public static Player isOut(Inning inning, Player player){
         for (int i = 0; i < inning.getOvers().size(); i++) {
             Over over = inning.getOvers().get(i);
             for (int j = 0; j < over.getBalls().size(); j++) {
                 Ball b = over.getBalls().get(j);
-                if(b.getBallType() == BallType.WICKET && b.getStriker() == player){
-                    return true;
+                if(b.getBallType() == BallType.WICKET && b.getStriker().getName().equals(player.getName())){
+                    return over.getBowler();
                 }
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -94,5 +94,7 @@ public class InningUtils {
         nonStrikerIndex = temp;
         return new int[]{strikerIndex, nonStrikerIndex};
     }
+
+
 
 }

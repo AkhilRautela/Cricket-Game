@@ -4,6 +4,26 @@ import java.util.ArrayList;
 
 public class PlayerDetails{
     String name;
+    boolean isOut;
+    String bowlerName;
+    int scoreInTheMatch;
+    int wicketTakenInTheMatch;
+
+    public boolean isOut() {
+        return isOut;
+    }
+
+    public void setOut(boolean out) {
+        isOut = out;
+    }
+
+    public String getBowler() {
+        return bowlerName;
+    }
+
+    public void setBowler(String bowler) {
+        this.bowlerName = bowler;
+    }
 
     public String getName() {
         return name;
@@ -28,8 +48,5 @@ public class PlayerDetails{
     public void setWicketTakenInTheMatch(int wicketTakenInTheMatch) {
         this.wicketTakenInTheMatch = wicketTakenInTheMatch;
     }
-
-    int scoreInTheMatch;
-    int wicketTakenInTheMatch;
 }
 

@@ -1,5 +1,6 @@
 package com.cricketgame.service;
 
+import com.cricketgame.exceptions.DatabaseErrorException;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
@@ -78,9 +79,8 @@ public class MatchServiceImpl {
     }
 
     public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
-
         Map <String, String> response = new HashMap<String, String>();
-      try{
+        try{
             Team team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
             Team team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
             start(team1, team2, overs);
@@ -88,12 +88,12 @@ public class MatchServiceImpl {
             getResults();
             response.put("status","1");
             response.put("matchId", String.valueOf(matchRepository.matchId));
+            return new ResponseEntity<Object>(response, HttpStatus.OK);
         }
-        catch (Exception e){
-            response.put("Status", "0");
-            e.printStackTrace();
+        catch (SQLException e){
+            throw new DatabaseErrorException();
         }
-        return new ResponseEntity<Object>(response, HttpStatus.OK);
+
     }
 
     public Inning getInning1() {

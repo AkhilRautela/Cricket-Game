@@ -6,6 +6,7 @@ public class TeamDetails {
     String teamName;
     int totalScore;
     int totalWicketTaken;
+    ArrayList<PlayerDetails> playerDetails;
 
     public String getTeamName() {
         return teamName;
@@ -39,5 +40,4 @@ public class TeamDetails {
         this.playerDetails = playerDetails;
     }
 
-    ArrayList<PlayerDetails> playerDetails;
 }

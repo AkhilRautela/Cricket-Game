@@ -2,16 +2,19 @@ package com.cricketgame.service;
 
 import com.cricketgame.constants.Constants;
 import com.cricketgame.database.DatabaseServiceImpl;
+import com.cricketgame.exceptions.*;
 import com.cricketgame.models.*;
 import com.cricketgame.models.databasemodels.Match.MatchDetails;
 import com.cricketgame.models.databasemodels.Match.PlayerDetails;
 import com.cricketgame.models.databasemodels.Match.TeamDetails;
+import com.cricketgame.models.databasemodels.Player.PlayerDetailsInAnMatch;
 import com.cricketgame.models.databasemodels.Team.PlayerInfo;
 import com.cricketgame.models.databasemodels.Team.TeamInfo;
 import com.cricketgame.models.enums.BallType;
 import com.cricketgame.repositories.InningRepository;
 import com.cricketgame.repositories.PlayerRepository;
 import com.cricketgame.repositories.TeamRepository;
+import com.cricketgame.utils.InningUtils;
 import com.cricketgame.utils.MatchUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,10 +43,12 @@ public class DataFetchServiceImpl {
     @Autowired
     MatchServiceImpl matchService;
 
-    public void getMatch(int matchId) throws SQLException {
+    public Boolean getMatch(int matchId) throws SQLException {
         ArrayList<Integer> inningsId = inningRepository.getInnings(matchId);
+        if(inningsId.size() < 2) return false;
         inning1 = createInnings(inningsId.get(0));
         inning2 = createInnings(inningsId.get(1));
+        return true;
     }
 
     public Inning createInnings(int inningId) throws SQLException {
@@ -103,9 +108,17 @@ public class DataFetchServiceImpl {
         matchService.getResults();
     }
 
-    public ResponseEntity<Object> fetchMatchDetails(int matchId) throws SQLException {
-        getMatch(matchId);
-        return new ResponseEntity<Object>(fillMatchDetails(matchId), HttpStatus.OK);
+    public ResponseEntity<Object> fetchMatchDetails(int matchId){
+        try {
+            boolean isFound = getMatch(matchId);
+            if(isFound == false){
+                throw new MatchNotFoundException("Match with the given Id is not found", 0);
+            }
+            return new ResponseEntity<Object>(fillMatchDetails(matchId), HttpStatus.OK);
+        }
+        catch (SQLException sqlException){
+            throw new DatabaseErrorException();
+        }
     }
 
     private MatchDetails fillMatchDetails(int matchId) {
@@ -144,6 +157,15 @@ public class DataFetchServiceImpl {
         playerdetail.setName(player.getName());
         playerdetail.setScoreInTheMatch(MatchUtils.getScoreOfPlayer(inning1,player));
         playerdetail.setWicketTakenInTheMatch(MatchUtils.getWicketsTakenByPlayer(inning2,player));
+        Player bowler = InningUtils.isOut(inning1, player);
+        if (bowler == null){
+            playerdetail.setOut(false);
+            playerdetail.setBowler("None");
+        }
+        else{
+            playerdetail.setOut(true);
+            playerdetail.setBowler(bowler.getName());
+        }
         return playerdetail;
     }
 
@@ -154,17 +176,13 @@ public class DataFetchServiceImpl {
             Team team1 = inning1.getBattingTeam();
             Team team2 = inning2.getBowlingTeam();
             if (checkPlayerPresent(team1, playerId) || checkPlayerPresent(team2, playerId)) {
-                return fillPlayerDetails(inning2, inning1, playerId);
+                return fillPlayerDetails(playerId);
             } else {
-                response.put("status", "0");
-                response.put("reason", "Player Not present in the teams of given match ID");
-                return new ResponseEntity<Object>(response, HttpStatus.OK);
+                throw new PlayerNotFoundInMatchException("Player Not Present in the Match", 0);
             }
         }
-        catch (Exception e){
-            e.printStackTrace();
-            response.put("status", "0");
-            return new ResponseEntity<Object>(response,HttpStatus.OK);
+        catch (SQLException e){
+            throw new DatabaseErrorException();
         }
     }
 
@@ -172,48 +190,37 @@ public class DataFetchServiceImpl {
         int teamId = teamRepository.getTeamId(String.valueOf(team.getName()));
         String query = "SELECT * FROM PLAYERDETAILS WHERE teamid = " + teamId + " and playerid = " + playerId;
         ResultSet result = databaseService.getResult(query);
-        int noOfRows = 0;
-        while(result.next()){
-            noOfRows += 1;
-        }
-        return noOfRows == 1;
+        return result.next();
     }
 
-    private ResponseEntity<Object> fillPlayerDetails(Inning inning2, Inning inning1, int playerId) throws SQLException {
-        Map <String, String> response = new HashMap<String, String>();
+    private ResponseEntity<Object> fillPlayerDetails(int playerId) {
+        PlayerDetailsInAnMatch playerDetailsInAnMatch = new PlayerDetailsInAnMatch();
         try{
             Player player = playerRepository.createPlayer(playerId);
-            int playerScore = MatchUtils.getScoreOfPlayer(inning1, player) + MatchUtils.getScoreOfPlayer(inning2, player);
-            int wicketTaken = MatchUtils.getWicketsTakenByPlayer(inning1, player) + MatchUtils.getWicketsTakenByPlayer(inning2,player);
-            response.put("status", "1");
-            response.put("playerId", String.valueOf(playerId));
-            response.put("name", player.getName());
-            response.put("score", String.valueOf(playerScore));
-            response.put("wicket taken", String.valueOf(wicketTaken));
+            playerDetailsInAnMatch.setWicketTaken(MatchUtils.getPlayersWhoseWicketsIsTaken(inning2, player));
+            playerDetailsInAnMatch.setBallsPlayed(MatchUtils.getBallsPlayed(player, inning1));
+            return  new ResponseEntity<Object>(playerDetailsInAnMatch, HttpStatus.OK);
         }
-        catch (Exception e){
-            e.printStackTrace();
-            response.put("status","0");
+        catch (SQLException sqlException){
+            throw new DatabaseErrorException();
         }
-        return  new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> getInfoOfTheTeam(String teamName) {
-
         try {
             int teamId = teamRepository.getTeamId(teamName);
+            if (teamId == -1) {
+                throw new TeamNotFoundException("Team not present in database", 0);
+            }
             Team team = teamRepository.createTeam(teamId);
             TeamInfo teamInfo = new TeamInfo();
             teamInfo.setId(teamId);
             teamInfo.setName(team.getName().toString());
-            teamInfo.setPlayerInfos(getPlayersInfo(teamId,team));
+            teamInfo.setPlayerInfos(getPlayersInfo(teamId, team));
             return ResponseEntity.ok().body(teamInfo);
         }
-        catch(Exception e){
-            Map <String, String> response = new HashMap<String, String>();
-            response.put("status","0");
-            response.put("reason","Team name does not exist in database");
-            return new ResponseEntity<Object>(response,HttpStatus.OK);
+        catch (SQLException sqlException) {
+            throw new DatabaseErrorException();
         }
     }
 
@@ -233,6 +240,16 @@ public class DataFetchServiceImpl {
         return playerInfos;
     }
 
+    public ResponseEntity<Object> getPlayerDetails(int playerId) {
+        try{
+            Player player = playerRepository.createPlayer(playerId);
+            return new ResponseEntity<Object>(player,HttpStatus.OK);
+        }
+        catch(SQLException sqlException){
+            throw new PlayerNotFoundException("Player With the given Id does not exist", 0);
+        }
+    }
+
     public Inning getInning1() {
         return inning1;
     }
@@ -248,6 +265,7 @@ public class DataFetchServiceImpl {
     public void setInning2(Inning inning2) {
         this.inning2 = inning2;
     }
+
 
 
 }

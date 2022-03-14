@@ -20,10 +20,14 @@ public class PlayerController {
     @Autowired
     DataFetchServiceImpl dataFetchService;
 
-    @GetMapping("/playerdetails/{playerId}/{matchId}")
+    @GetMapping("/playerdetails/playerid/{playerId}/matchid/{matchId}")
     ResponseEntity<Object> getPlayerDetailsForAnMatch(@PathVariable(value = "playerId") int playerId, @PathVariable(value = "matchId") int matchId) throws SQLException {
         return dataFetchService.getPlayerDetailsForMatch(matchId, playerId);
     }
 
+    @GetMapping("/playerdetails/playerid/{playerId}")
+    ResponseEntity<Object> getPlayerDetails(@PathVariable(value = "playerId") int playerId) {
+        return dataFetchService.getPlayerDetails(playerId);
+    }
 
 }
