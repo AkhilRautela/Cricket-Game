@@ -1,10 +1,6 @@
 package com.cricketgame.models;
 
 import com.cricketgame.models.enums.Teams;
-import com.cricketgame.repositories.TeamRepository;
-import com.cricketgame.utils.MatchUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -12,7 +8,7 @@ public class Team {
 
 
     private Teams name;
-    private ArrayList <Player> players = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
 
 
     public Teams getName() {

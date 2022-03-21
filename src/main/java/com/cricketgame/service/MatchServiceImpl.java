@@ -1,14 +1,13 @@
 package com.cricketgame.service;
 
-import com.cricketgame.exceptions.DatabaseErrorException;
-import com.cricketgame.exceptions.TeamNotFoundException;
+import com.cricketgame.exceptions.CricketGameException;
 import com.cricketgame.models.Inning;
-import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
 import com.cricketgame.repositories.InningRepository;
 import com.cricketgame.repositories.MatchRepository;
+import com.cricketgame.repositories.OverRepository;
 import com.cricketgame.repositories.TeamRepository;
-import com.cricketgame.utils.MatchUtils;
+import com.cricketgame.utils.InningUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,96 +28,71 @@ public class MatchServiceImpl {
     InningRepository inningRepository;
     @Autowired
     TeamRepository teamRepository;
-    Inning inning1;
-    Inning inning2;
+    @Autowired
+    OverRepository overRepository;
 
-    public void getResults() {
-        int team1score = MatchUtils.getScore(inning1);
-        int team2score = MatchUtils.getScore(inning2);
-        System.out.println("\nScore of " + inning1.getBattingTeam().getName() + " is " + team1score + " with wickets = " + MatchUtils.getTotalWickets(inning1));
-        System.out.println("Score of " + inning2.getBattingTeam().getName() + " is " + team2score + " with wickets = " + MatchUtils.getTotalWickets(inning2));
-        if (team1score == team2score) {
-            System.out.println("Draw between the teams");
-        } else if (team1score > team2score) {
-            System.out.println("\n" + inning1.getBattingTeam().getName() + " wins the game");
-        } else {
-            System.out.println("\n" + inning1.getBowlingTeam().getName() + " wins the game");
-        }
-    }
+    /**
+     * Create innings and starts the match.
+     *
+     * @param team1
+     * @param team2
+     * @param overs
+     * @throws SQLException
+     */
+    public int start(Team team1, Team team2, int overs) throws SQLException {
 
-    public void showScoreBoard(){
-        System.out.println("\nStats for "  + inning1.getBattingTeam().getName());
-        System.out.println("Player Name \t   PlayerType \t  Runs  Wickets");
-        for(int i = 0; i < 11; i++){
-            Player currentPlayer = inning1.getBattingTeam().getPlayers().get(i);
-            System.out.println(currentPlayer.getName() + "\t\t\t" + currentPlayer.getPlayertype() + "\t\t\t" + MatchUtils.getScoreOfPlayer(inning1,currentPlayer) + "\t\t" + MatchUtils.getWicketsTakenByPlayer(inning2,currentPlayer));
-        }
-        System.out.println("\nStats for "  + inning2.getBattingTeam().getName());
-        System.out.println("Player Name \t   PlayerType \t  Runs  Wickets");
-        for(int i = 0; i < 11; i++){
-            Player currentPlayer = inning2.getBattingTeam().getPlayers().get(i);
-            System.out.println(currentPlayer.getName() + "\t\t\t" + currentPlayer.getPlayertype() + "\t\t\t" + MatchUtils.getScoreOfPlayer(inning2,currentPlayer) + "\t\t" + MatchUtils.getWicketsTakenByPlayer(inning1,currentPlayer));
-        }
+        Inning inning1;
+        Inning inning2;
 
-    }
+        int matchId = matchRepository.createMatch(overs);
+        int battingTeamId = teamRepository.getTeamId(String.valueOf(team1.getName()));
+        int bowlingTeamId = teamRepository.getTeamId(String.valueOf(team2.getName()));
 
+        inning1 = new Inning(team1, team2, overs, false, 0);
 
-    public void start(Team team1, Team team2, int overs) throws SQLException {
-
-        matchRepository.createMatch(overs);
-
-        inning1 = new Inning(team1, team2 , overs,false , 0);
-        inningRepository.createInning(team1,team2);
+        int inning1id = inningRepository.insertInning(matchId, battingTeamId, bowlingTeamId);
         inningService.startInning(inning1);
-        inningRepository.insertInningData(inning1);
+        overRepository.insertOverData(inning1, inning1id, bowlingTeamId, battingTeamId);
 
-        inning2 = new Inning(team2, team1, overs, true , MatchUtils.getScore(inning1));
-        inningRepository.createInning(team2,team1);
+        inning2 = new Inning(team2, team1, overs, true, InningUtils.getScore(inning1));
+        int inning2id = inningRepository.insertInning(matchId, bowlingTeamId, battingTeamId);
         inningService.startInning(inning2);
-        inningRepository.insertInningData(inning2);
+        overRepository.insertOverData(inning2, inning2id, battingTeamId, bowlingTeamId);
+
+        return matchId;
 
     }
 
-    public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
-        Map <String, String> response = new HashMap<String, String>();
+    /**
+     * Handle starting the match by api call.
+     *
+     * @param team1Name
+     * @param team2Name
+     * @param overs
+     * @return
+     */
+    public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs) {
+        Map<String, String> response = new HashMap<String, String>();
         Team team1, team2;
+        int matchId;
         try {
             team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
-        }
-        catch (SQLException e) {
-            throw new TeamNotFoundException(team1Name + " teamname is not found in database", 0);
+        } catch (SQLException e) {
+            throw new CricketGameException(team1Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
         }
         try {
             team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
-        }
-        catch (SQLException e) {
-            throw new TeamNotFoundException(team2Name + " teamname is not found in database", 0);
+        } catch (SQLException e) {
+            throw new CricketGameException(team2Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
         }
         try {
-            start(team1, team2, overs);
+            matchId = start(team1, team2, overs);
         } catch (SQLException e) {
-            throw new DatabaseErrorException();
+            throw new CricketGameException("Database Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        showScoreBoard();
-        getResults();
-        response.put("status","1");
-        response.put("matchId", String.valueOf(matchRepository.matchId));
+        response.put("status", "1");
+        response.put("matchId", String.valueOf(matchId));
         return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
-    public Inning getInning1() {
-        return inning1;
-    }
-
-    public void setInning1(Inning inning1) {
-        this.inning1 = inning1;
-    }
-
-    public Inning getInning2() {
-        return inning2;
-    }
-
-    public void setInning2(Inning inning2) {
-        this.inning2 = inning2;
-    }
 }

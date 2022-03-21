@@ -1,18 +1,12 @@
 package com.cricketgame.controllers;
 
-
+import com.cricketgame.models.databasemodels.Match.MatchInfo;
 import com.cricketgame.service.DataFetchServiceImpl;
 import com.cricketgame.service.MatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-
-import java.sql.SQLException;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Component
@@ -26,13 +20,13 @@ public class MatchController {
 
 
     @GetMapping("/matchdetails/{id}")
-    public ResponseEntity<Object> getMatchDetails(@PathVariable(value = "id") int id) throws SQLException {
+    public ResponseEntity<Object> getMatchDetails(@PathVariable(value = "id") int id) {
         return dataFetchService.fetchMatchDetails(id);
     }
 
-    @GetMapping("/startMatch/team1name/{team1name}/team2name/{team2name}/overs/{overs}")
-    public ResponseEntity<Object> startMatch(@PathVariable(value = "team1name") String team1Name, @PathVariable(value = "team2name") String team2Name, @PathVariable(value = "overs") int overs) throws SQLException {
-        return matchService.startMatch(team1Name, team2Name, overs);
+    @PostMapping("/startMatch")
+    public ResponseEntity<Object> startMatch(@RequestBody MatchInfo matchinfo) {
+        return matchService.startMatch(matchinfo.getTeam1Name(), matchinfo.getTeam2Name(), matchinfo.getOvers());
     }
 
 

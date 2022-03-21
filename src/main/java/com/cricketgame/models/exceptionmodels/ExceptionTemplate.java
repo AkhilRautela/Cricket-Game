@@ -4,22 +4,12 @@ import java.time.Instant;
 
 public class ExceptionTemplate {
 
-    int status;
     String message;
     Instant timeStamp;
 
-    public ExceptionTemplate(int status, String message, Instant instant){
-        this.status = status;
+    public ExceptionTemplate(String message, Instant instant) {
         this.message = message;
         this.timeStamp = instant;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public String getMessage() {
@@ -37,7 +27,6 @@ public class ExceptionTemplate {
     public void setTimeStamp(Instant timeStamp) {
         this.timeStamp = timeStamp;
     }
-
 
 
 }

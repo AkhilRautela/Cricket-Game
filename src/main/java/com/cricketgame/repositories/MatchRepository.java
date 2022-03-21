@@ -1,6 +1,6 @@
 package com.cricketgame.repositories;
 
-import com.cricketgame.database.DatabaseServiceImpl;
+import com.cricketgame.database.DatabaseConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -10,17 +10,33 @@ import java.sql.SQLException;
 @Repository
 public class MatchRepository {
 
-    public int matchId;
     @Autowired
-    DatabaseServiceImpl databaseService;
+    DatabaseConnector databaseConnector;
 
-    public void createMatch(int overs) throws SQLException {
-
+    /**
+     * Insert overs in the table and get matchId.
+     *
+     * @param overs
+     * @return
+     * @throws SQLException
+     */
+    public int createMatch(int overs) throws SQLException {
         String query = "INSERT INTO MATCHDETAILS(totalovers) VALUES(" + overs + ")";
-        ResultSet result = databaseService.insertData(query);
+        ResultSet result = databaseConnector.insertData(query);
         result.next();
-        matchId = result.getInt(1);
-
+        return result.getInt(1);
     }
 
+    /**
+     * Get number of overs corresponding to given matchId.
+     *
+     * @param matchId
+     * @return
+     */
+    public int getOvers(int matchId) throws SQLException {
+        String query = "SELECT * FROM MATCHDETAILS WHERE MATCHID = " + matchId;
+        ResultSet result = databaseConnector.getResult(query);
+        result.next();
+        return result.getInt(2);
+    }
 }

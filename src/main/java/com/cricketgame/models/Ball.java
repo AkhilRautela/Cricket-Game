@@ -8,7 +8,7 @@ public class Ball {
     private int runsOnTheBall;
     private Player striker;
 
-    public Ball(){
+    public Ball() {
         this.runsOnTheBall = 0;
     }
 

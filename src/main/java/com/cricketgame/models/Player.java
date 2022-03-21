@@ -21,12 +21,12 @@ public class Player {
         this.name = name;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public int getRating() {
+        return rating;
     }
 
-    public int getRating() {
-         return rating;
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public PlayerType getPlayertype() {

@@ -1,7 +1,5 @@
 package com.cricketgame.models.databasemodels.Match;
 
-import com.cricketgame.models.databasemodels.Match.TeamDetails;
-
 import java.util.ArrayList;
 
 public class MatchDetails {

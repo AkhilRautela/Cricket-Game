@@ -6,7 +6,7 @@ public class TeamInfo {
 
     String name;
     int id;
-    ArrayList <PlayerInfo> playerInfos;
+    ArrayList<PlayerInfo> playerInfos;
 
     public String getName() {
         return name;

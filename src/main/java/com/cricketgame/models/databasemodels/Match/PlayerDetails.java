@@ -1,8 +1,6 @@
 package com.cricketgame.models.databasemodels.Match;
 
-import java.util.ArrayList;
-
-public class PlayerDetails{
+public class PlayerDetails {
     String name;
     boolean isOut;
     String bowlerName;
