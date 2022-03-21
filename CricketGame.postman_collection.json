@@ -1,0 +1,128 @@
+{
+	"info": {
+		"_postman_id": "b95eb22f-7fb8-4fb2-a7d9-8d6abd5be36e",
+		"name": "CricketGame",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "matchDetails",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/match/matchdetails/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"match",
+						"matchdetails",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPlayerDetailsForAnMatch",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/player/playerdetails/playerid/9/matchid/1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"player",
+						"playerdetails",
+						"playerid",
+						"9",
+						"matchid",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "startMatch",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/match/startMatch/team1name/india/team2name/australia/overs/2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"match",
+						"startMatch",
+						"team1name",
+						"india",
+						"team2name",
+						"australia",
+						"overs",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getTeamInfo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/team/teamname/india",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"team",
+						"teamname",
+						"india"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPlayerDetails",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8080/api",
+			"type": "string"
+		}
+	]
+}
