@@ -1,6 +1,7 @@
 package com.cricketgame.service;
 
 import com.cricketgame.exceptions.DatabaseErrorException;
+import com.cricketgame.exceptions.TeamNotFoundException;
 import com.cricketgame.models.Inning;
 import com.cricketgame.models.Player;
 import com.cricketgame.models.Team;
@@ -80,20 +81,29 @@ public class MatchServiceImpl {
 
     public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs){
         Map <String, String> response = new HashMap<String, String>();
-        try{
-            Team team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
-            Team team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
-            start(team1, team2, overs);
-            showScoreBoard();
-            getResults();
-            response.put("status","1");
-            response.put("matchId", String.valueOf(matchRepository.matchId));
-            return new ResponseEntity<Object>(response, HttpStatus.OK);
+        Team team1, team2;
+        try {
+            team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
         }
-        catch (SQLException e){
+        catch (SQLException e) {
+            throw new TeamNotFoundException(team1Name + " teamname is not found in database", 0);
+        }
+        try {
+            team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
+        }
+        catch (SQLException e) {
+            throw new TeamNotFoundException(team2Name + " teamname is not found in database", 0);
+        }
+        try {
+            start(team1, team2, overs);
+        } catch (SQLException e) {
             throw new DatabaseErrorException();
         }
-
+        showScoreBoard();
+        getResults();
+        response.put("status","1");
+        response.put("matchId", String.valueOf(matchRepository.matchId));
+        return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
     public Inning getInning1() {

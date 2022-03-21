@@ -44,11 +44,15 @@ public class DataFetchServiceImpl {
     MatchServiceImpl matchService;
 
     public Boolean getMatch(int matchId) throws SQLException {
+
         ArrayList<Integer> inningsId = inningRepository.getInnings(matchId);
-        if(inningsId.size() < 2) return false;
+        if (inningsId.size() < 2) {
+            throw new MatchNotFoundException("Match with given Id is not found",0);
+        };
         inning1 = createInnings(inningsId.get(0));
         inning2 = createInnings(inningsId.get(1));
         return true;
+
     }
 
     public Inning createInnings(int inningId) throws SQLException {
@@ -108,17 +112,19 @@ public class DataFetchServiceImpl {
         matchService.getResults();
     }
 
-    public ResponseEntity<Object> fetchMatchDetails(int matchId){
+    public ResponseEntity<Object> fetchMatchDetails(int matchId) {
+
+        boolean isFound;
         try {
-            boolean isFound = getMatch(matchId);
-            if(isFound == false){
-                throw new MatchNotFoundException("Match with the given Id is not found", 0);
-            }
-            return new ResponseEntity<Object>(fillMatchDetails(matchId), HttpStatus.OK);
-        }
-        catch (SQLException sqlException){
+            isFound = getMatch(matchId);
+        } catch (SQLException e) {
             throw new DatabaseErrorException();
         }
+        if(isFound == false){
+            throw new MatchNotFoundException("Match with the given Id is not found", 0);
+        }
+        return new ResponseEntity<Object>(fillMatchDetails(matchId), HttpStatus.OK);
+
     }
 
     private MatchDetails fillMatchDetails(int matchId) {
@@ -182,7 +188,7 @@ public class DataFetchServiceImpl {
             }
         }
         catch (SQLException e){
-            throw new DatabaseErrorException();
+            throw new DatabaseErrorException("Match with the given id is not found", 0);
         }
     }
 
