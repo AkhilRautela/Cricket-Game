@@ -96,7 +96,7 @@ public class InningUtils {
      */
     public static int getTotalWickets(Inning inning) {
         AtomicInteger totalWickets = new AtomicInteger();
-        
+
         inning.getOvers().stream().forEach(over -> {
             totalWickets.addAndGet((int) over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).count());
         });
@@ -112,7 +112,9 @@ public class InningUtils {
     public static int getScore(Inning inning) {
         AtomicInteger score = new AtomicInteger();
         inning.getOvers().stream().forEach(over -> {
-            over.getBalls().stream().forEach(ball -> {score.addAndGet(ball.getRunsOnTheBall());});
+            over.getBalls().stream().forEach(ball -> {
+                score.addAndGet(ball.getRunsOnTheBall());
+            });
         });
         return score.get();
     }
@@ -188,7 +190,9 @@ public class InningUtils {
     public static ArrayList<Player> getAllPlayersWhoseWicketsIsTaken(Inning inning, Player player) {
         ArrayList<Player> playersWhomWicketIsTaken = new ArrayList<Player>();
         inning.getOvers().stream().filter(over -> over.getBowler().getName().equals(player.getName())).forEach(over -> {
-            over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).forEach(ball -> {playersWhomWicketIsTaken.add(ball.getStriker());});
+            over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).forEach(ball -> {
+                playersWhomWicketIsTaken.add(ball.getStriker());
+            });
         });
         return playersWhomWicketIsTaken;
     }
