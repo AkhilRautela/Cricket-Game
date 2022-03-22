@@ -1,41 +1,11 @@
 package com.cricketgame.models.databasemodels.Team;
 
+import lombok.Data;
+
+@Data
 public class PlayerInfo {
-    String name;
-    int id;
-    String type;
-    int rating;
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
+    private String name;
+    private int id;
+    private String type;
+    private int rating;
 }

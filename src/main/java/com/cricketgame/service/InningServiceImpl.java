@@ -24,7 +24,7 @@ public class InningServiceImpl {
 
 
         for (int i = 1; i <= inning.getTotalOvers(); i++) {
-            strike.setCurrentBowlerIndex(InningUtils.getBowlerForTheOver(inning.getBowlingTeam().getPlayers()));
+            strike.setCurrentBowlerIndex(InningUtils.getBowlerIndexForTheOver(inning.getBowlingTeam().getPlayers()));
             if (InningUtils.isScoreMoreThenOppositeTeam(inning) || InningUtils.isAllOut(inning)) return;
             Over over = new Over();
             inning.getOvers().add(over);

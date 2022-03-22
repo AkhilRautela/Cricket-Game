@@ -1,9 +1,11 @@
 package com.cricketgame.exceptions;
 
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 
+@Data
 public class CricketGameException extends RuntimeException {
 
     HttpStatus status;
@@ -16,27 +18,4 @@ public class CricketGameException extends RuntimeException {
         instant = Instant.now();
     }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(HttpStatus status) {
-        this.status = status;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public Instant getInstant() {
-        return instant;
-    }
-
-    public void setInstant(Instant instant) {
-        this.instant = instant;
-    }
 }

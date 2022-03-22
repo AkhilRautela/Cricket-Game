@@ -139,10 +139,10 @@ public class DataFetchServiceImpl {
         Player bowler = InningUtils.getWicketTaker(inning1, player);
         if (bowler == null) {
             playerdetail.setOut(false);
-            playerdetail.setBowler("None");
+            playerdetail.setBowlerName("None");
         } else {
             playerdetail.setOut(true);
-            playerdetail.setBowler(bowler.getName());
+            playerdetail.setBowlerName(bowler.getName());
         }
         return playerdetail;
     }

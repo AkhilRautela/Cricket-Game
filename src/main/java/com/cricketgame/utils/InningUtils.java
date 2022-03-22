@@ -10,6 +10,7 @@ import com.cricketgame.models.enums.BallType;
 import com.cricketgame.models.enums.PlayerType;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class InningUtils {
     /**
@@ -55,7 +56,7 @@ public class InningUtils {
      * @param players
      * @return
      */
-    public static int getBowlerForTheOver(ArrayList<Player> players) {
+    public static int getBowlerIndexForTheOver(ArrayList<Player> players) {
         ArrayList<Integer> bowlers = new ArrayList<Integer>();
         for (int i = 0; i < 11; i++) {
             if (players.get(i).getPlayertype() == PlayerType.BOWLER) {
@@ -94,14 +95,12 @@ public class InningUtils {
      * @return
      */
     public static int getTotalWickets(Inning inning) {
-        int wickets = 0;
-        for (int i = 0; i < inning.getOvers().size(); i++) {
-            Over over = inning.getOvers().get(i);
-            for (int j = 0; j < over.getBalls().size(); j++) {
-                if (over.getBalls().get(j).getBallType() == BallType.WICKET) wickets += 1;
-            }
-        }
-        return wickets;
+        AtomicInteger totalWickets = new AtomicInteger();
+        
+        inning.getOvers().stream().forEach(over -> {
+            totalWickets.addAndGet((int) over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).count());
+        });
+        return totalWickets.get();
     }
 
     /**
@@ -111,14 +110,11 @@ public class InningUtils {
      * @return
      */
     public static int getScore(Inning inning) {
-        int score = 0;
-        for (int i = 0; i < inning.getOvers().size(); i++) {
-            Over over = inning.getOvers().get(i);
-            for (int j = 0; j < over.getBalls().size(); j++) {
-                score += over.getBalls().get(j).getRunsOnTheBall();
-            }
-        }
-        return score;
+        AtomicInteger score = new AtomicInteger();
+        inning.getOvers().stream().forEach(over -> {
+            over.getBalls().stream().forEach(ball -> {score.addAndGet(ball.getRunsOnTheBall());});
+        });
+        return score.get();
     }
 
     /**
@@ -129,15 +125,15 @@ public class InningUtils {
      * @return
      */
     public static int getScoreOfPlayer(Inning inning, Player player) {
-        int score = 0;
-        for (int i = 0; i < inning.getOvers().size(); i++) {
-            Over over = inning.getOvers().get(i);
-            for (int j = 0; j < over.getBalls().size(); j++) {
-                if (over.getBalls().get(j).getStriker().getName().equals(player.getName()))
-                    score += over.getBalls().get(j).getRunsOnTheBall();
-            }
-        }
-        return score;
+        AtomicInteger score = new AtomicInteger();
+        inning.getOvers().stream().forEach(over -> {
+            over.getBalls().stream().filter(ball -> ball.getStriker().getName().equals(player.getName())).forEach(
+                    ball -> {
+                        score.addAndGet(ball.getRunsOnTheBall());
+                    }
+            );
+        });
+        return score.get();
     }
 
     /**
@@ -148,16 +144,12 @@ public class InningUtils {
      * @return
      */
     public static int getWicketsTakenByPlayer(Inning inning, Player player) {
-        int wicketsTaken = 0;
-        for (int i = 0; i < inning.getOvers().size(); i++) {
-            Over over = inning.getOvers().get(i);
-            if (over.getBowler().getName().equals(player.getName())) {
-                for (int j = 0; j < over.getBalls().size(); j++) {
-                    if (over.getBalls().get(j).getBallType() == BallType.WICKET) wicketsTaken += 1;
-                }
-            }
-        }
-        return wicketsTaken;
+        AtomicInteger wicketsTaken = new AtomicInteger();
+
+        inning.getOvers().stream().filter(over -> over.getBowler().getName().equals(player.getName())).forEach(over -> {
+            wicketsTaken.addAndGet((int) over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).count());
+        });
+        return wicketsTaken.get();
     }
 
     /**
@@ -195,16 +187,9 @@ public class InningUtils {
      */
     public static ArrayList<Player> getAllPlayersWhoseWicketsIsTaken(Inning inning, Player player) {
         ArrayList<Player> playersWhomWicketIsTaken = new ArrayList<Player>();
-        for (int i = 0; i < inning.getOvers().size(); i++) {
-            Over over = inning.getOvers().get(i);
-            if (over.getBowler().getName().equals(player.getName())) {
-                for (int j = 0; j < over.getBalls().size(); j++) {
-                    if (over.getBalls().get(j).getBallType() == BallType.WICKET) {
-                        playersWhomWicketIsTaken.add(over.getBalls().get(j).getStriker());
-                    }
-                }
-            }
-        }
+        inning.getOvers().stream().filter(over -> over.getBowler().getName().equals(player.getName())).forEach(over -> {
+            over.getBalls().stream().filter(ball -> ball.getBallType() == BallType.WICKET).forEach(ball -> {playersWhomWicketIsTaken.add(ball.getStriker());});
+        });
         return playersWhomWicketIsTaken;
     }
 }

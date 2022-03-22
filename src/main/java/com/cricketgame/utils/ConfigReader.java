@@ -5,7 +5,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
-
+    /**
+     * Fetch properties from the provided filename
+     *
+     * @param filename
+     * @return
+     * @throws IOException
+     */
     public static Properties getProperties(String filename) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(filename);
         Properties properties = new Properties();
