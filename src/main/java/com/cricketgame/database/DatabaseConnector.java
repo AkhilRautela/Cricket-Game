@@ -1,6 +1,6 @@
 package com.cricketgame.database;
 
-import com.cricketgame.utils.ConfigReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +10,8 @@ import java.util.Properties;
 @Repository
 public class DatabaseConnector {
 
+    @Autowired
+    DatabaseConfiguration databaseConfiguration;
     public Connection connection;
 
     /**
@@ -20,8 +22,7 @@ public class DatabaseConnector {
     @PostConstruct
     public void createConnection() {
         try {
-            Properties properties = ConfigReader.getProperties("src/main/resources/dbconfig.properties");
-            this.connection = DriverManager.getConnection(properties.getProperty("url"), properties.getProperty("username"), properties.getProperty("password"));
+            this.connection = DriverManager.getConnection(databaseConfiguration.getUrl(), databaseConfiguration.getUsername() , databaseConfiguration.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);
