@@ -1,19 +1,24 @@
 package com.cricketgame.service;
 
 import com.cricketgame.exceptions.CricketGameException;
-import com.cricketgame.models.Inning;
-import com.cricketgame.models.Team;
-import com.cricketgame.repositories.InningRepository;
-import com.cricketgame.repositories.MatchRepository;
-import com.cricketgame.repositories.OverRepository;
-import com.cricketgame.repositories.TeamRepository;
-import com.cricketgame.utils.InningUtils;
+import com.cricketgame.models.entity.InningDetails;
+import com.cricketgame.models.entity.MatchDetails;
+import com.cricketgame.models.entity.PlayerDetails;
+import com.cricketgame.models.response.MatchInfo;
+import com.cricketgame.models.response.PlayerDetailsInMatch;
+import com.cricketgame.models.response.TeamDetailsInMatch;
+import com.cricketgame.repositories.InningDetailRepo;
+import com.cricketgame.repositories.MatchDetailRepo;
+import com.cricketgame.repositories.PlayerDetailRepo;
+import com.cricketgame.repositories.TeamDetailRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,42 +28,50 @@ public class MatchServiceImpl {
     @Autowired
     InningServiceImpl inningService;
     @Autowired
-    MatchRepository matchRepository;
+    PlayerServiceImpl playerService;
     @Autowired
-    InningRepository inningRepository;
+    IdGenerator idGenerator;
+
     @Autowired
-    TeamRepository teamRepository;
+    MatchDetailRepo matchDetailsRepository;
     @Autowired
-    OverRepository overRepository;
+    TeamDetailRepo teamDetailsRepository;
+    @Autowired
+    PlayerDetailRepo playerDetailsRepository;
+    @Autowired
+    InningDetailRepo inningDetailsRepository;
+
+
 
     /**
      * Create innings and starts the match.
      *
-     * @param team1
-     * @param team2
+     * @param team1Name
+     * @param team2Name
      * @param overs
      * @throws SQLException
      */
-    public int start(Team team1, Team team2, int overs) throws SQLException {
+    public int startGame(String team1Name, String team2Name, int overs) throws SQLException, IOException {
 
-        Inning inning1;
-        Inning inning2;
+        int team1Id, team2Id;
+        MatchDetails matchDetails = new MatchDetails();
+        matchDetails.setMatchId(idGenerator.getNextMatchId());
+        matchDetails.setTotalOvers(overs);
+        MatchDetails matchDetailSaved = matchDetailsRepository.save(matchDetails);
 
-        int matchId = matchRepository.createMatch(overs);
-        int battingTeamId = teamRepository.getTeamId(String.valueOf(team1.getName()));
-        int bowlingTeamId = teamRepository.getTeamId(String.valueOf(team2.getName()));
+        try {
+            team1Id = teamDetailsRepository.findByName(team1Name.toUpperCase()).getTeamId();
+        } catch (NullPointerException nullPointerException) {
+            throw new CricketGameException(team1Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
+        }
+        try {
+            team2Id = teamDetailsRepository.findByName(team2Name.toUpperCase()).getTeamId();
+        } catch (NullPointerException nullPointerException) {
+            throw new CricketGameException(team2Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
+        }
 
-        inning1 = new Inning(team1, team2, overs, false, 0);
-
-        int inning1id = inningRepository.insertInning(matchId, battingTeamId, bowlingTeamId);
-        inningService.startInning(inning1);
-        overRepository.insertOverData(inning1, inning1id, bowlingTeamId, battingTeamId);
-
-        inning2 = new Inning(team2, team1, overs, true, InningUtils.getScore(inning1));
-        int inning2id = inningRepository.insertInning(matchId, bowlingTeamId, battingTeamId);
-        inningService.startInning(inning2);
-        overRepository.insertOverData(inning2, inning2id, battingTeamId, bowlingTeamId);
-
+        int matchId = matchDetailSaved.getMatchId();
+        inningService.createAndStartInnings(matchId, team1Id, team2Id, overs);
         return matchId;
 
     }
@@ -73,21 +86,10 @@ public class MatchServiceImpl {
      */
     public ResponseEntity<Object> startMatch(String team1Name, String team2Name, int overs) {
         Map<String, String> response = new HashMap<String, String>();
-        Team team1, team2;
-        int matchId;
+        int matchId = 0;
         try {
-            team1 = teamRepository.createTeam(teamRepository.getTeamId(team1Name));
-        } catch (SQLException e) {
-            throw new CricketGameException(team1Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
-        }
-        try {
-            team2 = teamRepository.createTeam(teamRepository.getTeamId(team2Name));
-        } catch (SQLException e) {
-            throw new CricketGameException(team2Name + " teamname is not found in database", HttpStatus.NOT_FOUND);
-        }
-        try {
-            matchId = start(team1, team2, overs);
-        } catch (SQLException e) {
+            matchId = startGame(team1Name, team2Name, overs);
+        } catch (SQLException | IOException e) {
             throw new CricketGameException("Database Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         response.put("status", "1");
@@ -95,4 +97,37 @@ public class MatchServiceImpl {
         return new ResponseEntity<Object>(response, HttpStatus.OK);
     }
 
+    public ResponseEntity<Object> fetchMatchDetails(int matchId) {
+        ArrayList<InningDetails> inningDetails = (ArrayList<InningDetails>) inningDetailsRepository.findByMatchId(matchId);
+        try{
+            int team1Id = inningDetails.get(0).getBattingTeamId();
+            int team2Id = inningDetails.get(0).getBowlingTeamId();
+            ArrayList <TeamDetailsInMatch> teamDetailsInMatches = new ArrayList<>();
+            teamDetailsInMatches.add(fetchTeamDetailsInMatch(matchId, team1Id));
+            teamDetailsInMatches.add(fetchTeamDetailsInMatch(matchId, team2Id));
+            MatchInfo matchInfo = new MatchInfo();
+            matchInfo.setMatchId(matchId);
+            matchInfo.setTeamDetailsInMatches(teamDetailsInMatches);
+            return new ResponseEntity<Object>(matchInfo, HttpStatus.OK);
+        }
+        catch (NullPointerException nullPointerException) {
+            throw new CricketGameException("Match with given Id is not found", HttpStatus.NOT_FOUND);
+        }
+        catch (IndexOutOfBoundsException Exception){
+            throw new CricketGameException("Match with given Id is not found", HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    private TeamDetailsInMatch fetchTeamDetailsInMatch(int matchId, int teamId) {
+        ArrayList <PlayerDetails> playerDetails = (ArrayList<PlayerDetails>) playerDetailsRepository.findByTeamId(teamId);
+        TeamDetailsInMatch teamDetailsInMatch = new TeamDetailsInMatch();
+        ArrayList <PlayerDetailsInMatch> playersDetailsInMatch = new ArrayList<>();
+        for(PlayerDetails playerDetail : playerDetails){
+            playersDetailsInMatch.add(playerService.getPlayerDetailsInMatch(matchId, playerDetail.getPlayerId()));
+        }
+        teamDetailsInMatch.setTeamId(teamId);
+        teamDetailsInMatch.setPlayerDetailsInMatches(playersDetailsInMatch);
+        return teamDetailsInMatch;
+    }
 }

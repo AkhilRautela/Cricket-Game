@@ -1,7 +1,7 @@
 package com.cricketgame.controllers;
 
-import com.cricketgame.models.databasemodels.Match.MatchInfo;
-import com.cricketgame.service.DataFetchServiceImpl;
+import com.cricketgame.models.request.MatchInfo;
+import com.cricketgame.repositories.mongorepository.BallDetailsRepository;
 import com.cricketgame.service.MatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,20 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class MatchController {
 
     @Autowired
-    DataFetchServiceImpl dataFetchService;
-    @Autowired
     MatchServiceImpl matchService;
 
 
     @GetMapping("/matchdetails/{id}")
     public ResponseEntity<Object> getMatchDetails(@PathVariable(value = "id") int id) {
-        return dataFetchService.fetchMatchDetails(id);
+        return matchService.fetchMatchDetails(id);
     }
-
+//
     @PostMapping("/startMatch")
     public ResponseEntity<Object> startMatch(@RequestBody MatchInfo matchinfo) {
         return matchService.startMatch(matchinfo.getTeam1Name(), matchinfo.getTeam2Name(), matchinfo.getOvers());
     }
-
 
 }

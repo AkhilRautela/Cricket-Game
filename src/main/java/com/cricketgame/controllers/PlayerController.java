@@ -1,7 +1,7 @@
 package com.cricketgame.controllers;
 
 
-import com.cricketgame.service.DataFetchServiceImpl;
+import com.cricketgame.service.PlayerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlayerController {
 
     @Autowired
-    DataFetchServiceImpl dataFetchService;
+    PlayerServiceImpl playerService;
 
     @GetMapping("/playerid/{playerId}/matchid/{matchId}")
     ResponseEntity<Object> getPlayerStatsInMatch(@PathVariable(value = "playerId") int playerId, @PathVariable(value = "matchId") int matchId) {
-        return dataFetchService.getPlayerStatsInMatch(matchId, playerId);
+        return playerService.getPlayerStatsInMatch(matchId, playerId);
     }
 
     @GetMapping("/playerid/{playerId}")
     ResponseEntity<Object> getPlayerStats(@PathVariable(value = "playerId") int playerId) {
-        return dataFetchService.getPlayerDetails(playerId);
+        return playerService.getPlayerDetails(playerId);
     }
 
 }
